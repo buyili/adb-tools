@@ -70,8 +70,10 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                     ),
                     const SizedBox(width: 10),
                     FilledButton(
-                      onPressed:
-                          (widget.targetDevice != null && widget.list.isNotEmpty) ? widget.onInstall : null,
+                      onPressed: (widget.targetDevice != null &&
+                              widget.list.isNotEmpty)
+                          ? widget.onInstall
+                          : null,
                       child: const Text("Install"),
                     ),
                   ],
@@ -84,6 +86,7 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey, width: 1),
                 borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                color: Theme.of(context).primaryColor.withOpacity(0.1),
               ),
               child: widget.list.isEmpty
                   ? const Center(child: Text("Drop APK files here"))
