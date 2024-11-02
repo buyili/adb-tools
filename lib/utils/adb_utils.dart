@@ -1,6 +1,8 @@
+import 'package:adb_tools/data/models/device.dart';
 import 'package:adb_tools/models/output_text_model.dart';
 import 'package:adb_tools/utils/cmd_plus_wrap.dart';
 import 'package:cmd_plus/cmd_plus.dart';
+import 'package:cross_file/cross_file.dart';
 
 class ADBUtils {
   static final cmdPlus = CmdPlusWrap();
@@ -63,7 +65,6 @@ class ADBUtils {
     model.updateOutput('$cmd\n');
     final result = await runCmd(cmd);
 
-    /// must set throwOnError to false to avoid throwing an exception when the command fails
     if (result.error.isNotEmpty) {
       model.updateOutput('${result.error}\n');
       cmdPlus.close();
@@ -75,5 +76,23 @@ class ADBUtils {
     cmdPlus.close();
 
     return result.output.contains('disconnected ');
+  }
+
+  static Future<void> install(OutputTextModel model, Device? selectedDevice,
+      List<XFile> apkFileList) async {
+    if (selectedDevice == null) {
+      return;
+    }
+
+    for (var apkFile in apkFileList) {
+      var cmd = 'adb -s ${selectedDevice.host} install -r ${apkFile.path}';
+      model.updateOutput('$cmd\n');
+      final result = await runCmd(cmd);
+
+      model.updateOutput(
+          '${result.error.isNotEmpty ? result.error : result.output}\n');
+
+      cmdPlus.close();
+    }
   }
 }

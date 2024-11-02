@@ -3,7 +3,9 @@ import 'package:adb_tools/data/isar_db.dart';
 import 'package:adb_tools/data/models/device.dart';
 import 'package:adb_tools/models/output_text_model.dart';
 import 'package:adb_tools/utils/adb_utils.dart';
+import 'package:adb_tools/views/apk_drop_target.dart';
 import 'package:adb_tools/views/history_tile.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
@@ -20,8 +22,11 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   final Isar _isar = IsarDb.getIns();
   List<Device> devices = [];
+  Device? selectedDevice;
   late OutputTextModel model;
   final _scrollController = ScrollController();
+  // selected apk files
+  final List<XFile> _apkFileList = [];
 
   @override
   void initState() {
@@ -84,17 +89,20 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
+  void onSelect(Device device) {
+    setState(() {
+      selectedDevice = device;
+    });
+  }
+
   // connect to device
   void onConnect(Device device) async {
-    await ADBUtils.connect(model, '${device.ip}:${device.port}');
+    await ADBUtils.connect(model, device.host);
   }
 
   // disconnect device
   void onDisconnect(Device device) async {
-    await ADBUtils.disconnect(model, '${device.ip}:${device.port}');
-    // _isar.writeTxnSync(() {
-    //   _isar.devices.deleteSync(device.id);
-    // });
+    await ADBUtils.disconnect(model, device.host);
   }
 
   // delete device from isar
@@ -102,13 +110,17 @@ class _MainPageState extends State<MainPage> {
     showDeleteDialog(
       context,
       'Delete Device',
-      'Are you sure you want to delete ${device.ip}?',
+      'Are you sure you want to delete ${device.host}?',
       () {
         _isar.writeTxnSync(() {
           _isar.devices.deleteSync(device.id);
         });
       },
     );
+  }
+
+  void onInstall() {
+    ADBUtils.install(model, selectedDevice, _apkFileList);
   }
 
   @override
@@ -136,6 +148,10 @@ class _MainPageState extends State<MainPage> {
                         itemBuilder: (context, index) {
                           return HistoryTile(
                             device: devices[index],
+                            isSelected: selectedDevice == devices[index],
+                            onTap: () {
+                              onSelect(devices[index]);
+                            },
                             onConnect: () {
                               onConnect(devices[index]);
                             },
@@ -150,6 +166,8 @@ class _MainPageState extends State<MainPage> {
                       ),
                     ),
                   ),
+
+                  ApkDragTarget(list: _apkFileList, targetDevice: selectedDevice, onInstall: onInstall,),
                 ],
               ),
             ),

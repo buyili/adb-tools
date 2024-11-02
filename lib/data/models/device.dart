@@ -6,4 +6,6 @@ class Device {
   Id id = Isar.autoIncrement;
   String? ip;
   String? port;
+
+  String get host => '$ip:$port';
 }
