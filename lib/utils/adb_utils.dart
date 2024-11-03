@@ -6,17 +6,16 @@ import 'package:cross_file/cross_file.dart';
 
 class ADBUtils {
   static final cmdPlus = CmdPlusWrap();
+  static const workingDirectory = bool.fromEnvironment('dart.vm.product') ? './data/flutter_assets/assets/' : './assets/';
 
   static Future<CmdPlusResult> runCmd(String cmd) async {
-    final result = await cmdPlus.run(
-      cmd,
-      [],
+    final result = await cmdPlus.run(cmd, [],
 
-      /// Running in detached mode, so the process will not automatically print
-      /// the output.
-      mode: CmdPlusMode.detached(),
-      throwOnError: false,
-    );
+        /// Running in detached mode, so the process will not automatically print
+        /// the output.
+        mode: CmdPlusMode.detached(),
+        throwOnError: false,
+        workingDirectory: workingDirectory);
     return result;
   }
 
@@ -27,19 +26,18 @@ class ADBUtils {
 
     final result = await runCmd(cmd);
 
-    /// Print the output of the process.
-    // cmdPlus.logger.write(result.output);
+    model.updateOutput(
+        '${result.error.isNotEmpty ? result.error : result.output}\n');
 
-    model.updateOutput(result.output);
-
-    /// Extract the host names from the output.
-    var pattern = RegExp(r'\n(.+)	(.+)');
-    var matches = pattern.allMatches(result.output);
     var hosts = <String>[];
-    for (var match in matches) {
-      hosts.add(match.group(1).toString());
+    if (result.error.isEmpty) {
+      /// Extract the host names from the output.
+      var pattern = RegExp(r'\n(.+)	(.+)');
+      var matches = pattern.allMatches(result.output);
+      for (var match in matches) {
+        hosts.add(match.group(1).toString());
+      }
     }
-    // debugPrint(hosts.toString());
 
     cmdPlus.close();
 
@@ -52,7 +50,8 @@ class ADBUtils {
     model.updateOutput('$cmd\n');
     final result = await runCmd(cmd);
 
-    model.updateOutput('${result.output}\n');
+    model.updateOutput(
+        '${result.error.isNotEmpty ? result.error : result.output}\n');
 
     cmdPlus.close();
 
@@ -65,13 +64,8 @@ class ADBUtils {
     model.updateOutput('$cmd\n');
     final result = await runCmd(cmd);
 
-    if (result.error.isNotEmpty) {
-      model.updateOutput('${result.error}\n');
-      cmdPlus.close();
-      return false;
-    }
-
-    model.updateOutput('${result.output}\n');
+    model.updateOutput(
+        '${result.error.isNotEmpty ? result.error : result.output}\n');
 
     cmdPlus.close();
 
