@@ -1,3 +1,5 @@
-# adb_tools
+# ADB Tools
 
-A ADB tools project.
+A simple GUI for ADB.
+
+![](.README_images/b9f2312e.png)
