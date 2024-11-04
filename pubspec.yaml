@@ -16,6 +16,11 @@ dependencies:
   isar_flutter_libs: ^3.1.0+1
   path_provider: ^2.1.5
   provider: ^6.1.2
+  window_size:
+    git:
+      url: https://github.com/google/flutter-desktop-embedding.git
+      path: plugins/window_size
+      ref: eb39649
 
 dev_dependencies:
   flutter_test:
