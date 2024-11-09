@@ -6,7 +6,9 @@ import 'package:cross_file/cross_file.dart';
 
 class ADBUtils {
   static final cmdPlus = CmdPlusWrap();
-  static const workingDirectory = bool.fromEnvironment('dart.vm.product') ? './data/flutter_assets/assets/' : './assets/';
+  static const workingDirectory = bool.fromEnvironment('dart.vm.product')
+      ? './data/flutter_assets/assets/'
+      : './assets/';
 
   static Future<CmdPlusResult> runCmd(String cmd) async {
     final result = await cmdPlus.run(cmd, [],
@@ -22,11 +24,11 @@ class ADBUtils {
   static Future<List<String>> devices(OutputTextModel model) async {
     /// Run any commands
     var cmd = 'adb devices -l';
-    model.updateOutput('$cmd\n');
+    int taskIndex = model.addTask(cmd);
 
     final result = await runCmd(cmd);
 
-    model.updateOutput(
+    model.updateTask(taskIndex,
         '${result.error.isNotEmpty ? result.error : result.output}\n');
 
     var hosts = <String>[];
@@ -47,10 +49,10 @@ class ADBUtils {
   // connect to a device
   static Future<bool> connect(OutputTextModel model, String host) async {
     var cmd = 'adb connect $host';
-    model.updateOutput('$cmd\n');
+    int taskIndex = model.addTask(cmd);
     final result = await runCmd(cmd);
 
-    model.updateOutput(
+    model.updateTask(taskIndex,
         '${result.error.isNotEmpty ? result.error : result.output}\n');
 
     cmdPlus.close();
@@ -61,10 +63,10 @@ class ADBUtils {
   /// disconnect from a device
   static Future<bool> disconnect(OutputTextModel model, String host) async {
     var cmd = 'adb disconnect $host';
-    model.updateOutput('$cmd\n');
+    int taskIndex = model.addTask(cmd);
     final result = await runCmd(cmd);
 
-    model.updateOutput(
+    model.updateTask(taskIndex,
         '${result.error.isNotEmpty ? result.error : result.output}\n');
 
     cmdPlus.close();
@@ -80,10 +82,10 @@ class ADBUtils {
 
     for (var apkFile in apkFileList) {
       var cmd = 'adb -s ${selectedDevice.host} install -r ${apkFile.path}';
-      model.updateOutput('$cmd\n');
+      int taskIndex = model.addTask(cmd);
       final result = await runCmd(cmd);
 
-      model.updateOutput(
+      model.updateTask(taskIndex,
           '${result.error.isNotEmpty ? result.error : result.output}\n');
 
       cmdPlus.close();

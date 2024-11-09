@@ -5,6 +5,7 @@ import 'package:adb_tools/models/output_text_model.dart';
 import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:adb_tools/views/apk_drop_target.dart';
 import 'package:adb_tools/views/history_tile.dart';
+import 'package:adb_tools/views/output_view.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
@@ -167,7 +168,11 @@ class _MainPageState extends State<MainPage> {
                     ),
                   ),
 
-                  ApkDragTarget(list: _apkFileList, targetDevice: selectedDevice, onInstall: onInstall,),
+                  ApkDragTarget(
+                    list: _apkFileList,
+                    targetDevice: selectedDevice,
+                    onInstall: onInstall,
+                  ),
                 ],
               ),
             ),
@@ -338,7 +343,7 @@ class RightSideWidget extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  model.clearOutput();
+                  model.clear();
                 },
                 child: const Text('Clear'),
               ),
@@ -346,25 +351,7 @@ class RightSideWidget extends StatelessWidget {
           ),
           const SizedBox(height: 10.0),
           Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey, width: 1.0),
-                borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-              ),
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                reverse: true,
-                controller: _scrollController,
-                children: [
-                  Consumer<OutputTextModel>(builder: (context, model, child) {
-                    return SelectableText(
-                      model.output,
-                      style: const TextStyle(fontSize: 12.0),
-                    );
-                  }),
-                ],
-              ),
-            ),
+            child: OutputView(scrollController: _scrollController),
           ),
         ],
       ),

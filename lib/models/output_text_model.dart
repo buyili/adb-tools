@@ -1,15 +1,24 @@
+import 'package:adb_tools/models/cmd_task.dart';
 import 'package:flutter/material.dart';
 
 class OutputTextModel extends ChangeNotifier {
-  String output = '';
+  List<CmdTask> tasks = [];
 
-  void updateOutput(String newOutput) {
-    output += newOutput;
+  int addTask(String cmd) {
+    CmdTask task = CmdTask();
+    task.cmd = cmd;
+    tasks.add(task);
+    notifyListeners();
+    return tasks.length - 1;
+  }
+
+  void updateTask(int index, String output) {
+    tasks[index].output = output;
     notifyListeners();
   }
 
-  void clearOutput() {
-    output = '';
+  void clear() {
+    tasks.clear();
     notifyListeners();
   }
 }
