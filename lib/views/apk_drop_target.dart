@@ -9,11 +9,13 @@ class ApkDragTarget extends StatefulWidget {
   final List<XFile> list;
   final Device? targetDevice;
   final Function() onInstall;
+  final Function() onPush;
 
   const ApkDragTarget({
     super.key,
     required this.list,
     required this.onInstall,
+    required this.onPush,
     this.targetDevice,
   });
 
@@ -75,6 +77,14 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                           ? widget.onInstall
                           : null,
                       child: const Text("Install"),
+                    ),
+                    const SizedBox(width: 10),
+                    FilledButton(
+                      onPressed: (widget.targetDevice != null &&
+                              widget.list.isNotEmpty)
+                          ? widget.onPush
+                          : null,
+                      child: const Text("Push"),
                     ),
                   ],
                 ),

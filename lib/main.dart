@@ -47,7 +47,8 @@ class MainApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: ChangeNotifierProvider(
-        create: (context) => OutputTextModel(),
+        // Must use OutputTextModelFactory initial instance.
+        create: (context) => OutputTextModelFactory.getIns(),
         child: const MainPage(),
       ),
     );

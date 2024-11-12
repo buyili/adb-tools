@@ -22,3 +22,15 @@ class OutputTextModel extends ChangeNotifier {
     notifyListeners();
   }
 }
+
+class OutputTextModelFactory {
+  static OutputTextModel? model;
+
+  static OutputTextModel getIns(){
+    if(model != null) {
+      return model!;
+    }
+    model = OutputTextModel();
+    return model!;
+  }
+}

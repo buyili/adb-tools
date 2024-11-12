@@ -51,13 +51,13 @@ class _MainPageState extends State<MainPage> {
 
   // show connected devices
   void showConnectedDevices() {
-    ADBUtils.devices(model);
+    ADBUtils.devices();
   }
 
   // connect to device and save ip address and port to isar
   void onSubmit(String ip, String port) async {
     // connect to device
-    bool connected = await ADBUtils.connect(model, '$ip:$port');
+    bool connected = await ADBUtils.connect('$ip:$port');
     if (!connected) {
       debugPrint("connection failed");
       return;
@@ -98,12 +98,12 @@ class _MainPageState extends State<MainPage> {
 
   // connect to device
   void onConnect(Device device) async {
-    await ADBUtils.connect(model, device.host);
+    await ADBUtils.connect(device.host);
   }
 
   // disconnect device
   void onDisconnect(Device device) async {
-    await ADBUtils.disconnect(model, device.host);
+    await ADBUtils.disconnect(device.host);
   }
 
   // delete device from isar
@@ -120,8 +120,14 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  // install apk to device
   void onInstall() {
-    ADBUtils.install(model, selectedDevice, _apkFileList);
+    ADBUtils.install(selectedDevice, _apkFileList);
+  }
+
+  // push file to device
+  void onPush(){
+    ADBUtils.push(selectedDevice, _apkFileList);
   }
 
   @override
@@ -172,6 +178,7 @@ class _MainPageState extends State<MainPage> {
                     list: _apkFileList,
                     targetDevice: selectedDevice,
                     onInstall: onInstall,
+                    onPush: onPush,
                   ),
                 ],
               ),
@@ -337,7 +344,7 @@ class RightSideWidget extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  ADBUtils.devices(model);
+                  ADBUtils.devices();
                 },
                 child: const Text('Show Devices'),
               ),
