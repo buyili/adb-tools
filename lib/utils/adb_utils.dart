@@ -42,25 +42,37 @@ class ADBUtils {
     return result;
   }
 
-  static Future<List<String>> devices() async {
+  static Future<List<DeviceInfo>> devices() async {
     /// Run any commands
     var cmd = 'adb devices -l';
 
     final result = await runCmd(cmd, []);
 
-    var hosts = <String>[];
+    List<DeviceInfo> devices = [];
     if (result.error.isEmpty) {
       /// Extract the host names from the output.
-      var pattern = RegExp(r'\n(.+)	(.+)');
+      var pattern = RegExp(
+          r'\n(.+)\b +(offline|device|no device) product:(.+) model:(.+) device:(.+) transport_id:(.+)');
       var matches = pattern.allMatches(result.output);
       for (var match in matches) {
-        hosts.add(match.group(1).toString());
+        var serialNumber = match.group(1).toString();
+        var state = match.group(2).toString();
+        var deviceInfo = DeviceInfo()
+          ..serialNumber = serialNumber
+          ..state = state
+          ..product = match.group(3).toString()
+          ..model = match.group(4).toString()
+          ..device = match.group(5).toString()
+          ..transportId = match.group(6).toString()
+          ..wifi = serialNumber.contains(":")
+          ..connected = state == DeviceState.device.name;
+        devices.add(deviceInfo);
       }
     }
 
     cmdPlus.close();
 
-    return hosts;
+    return devices;
   }
 
   // connect to a device
@@ -84,13 +96,13 @@ class ADBUtils {
   }
 
   static Future<void> install(
-      Device? selectedDevice, List<XFile> apkFileList) async {
+      DeviceInfo? selectedDevice, List<XFile> apkFileList) async {
     if (selectedDevice == null) {
       return;
     }
 
     for (var apkFile in apkFileList) {
-      var args = ['-s', selectedDevice.host, 'install', '-r', apkFile.path];
+      var args = ['-s', selectedDevice.serialNumber, 'install', '-r', apkFile.path];
       await runCmd('adb', args, argsSerialize: (args) {
         return args
             .asMap()
@@ -110,7 +122,7 @@ class ADBUtils {
   }
 
   static Future<void> push(
-      Device? selectedDevice, List<XFile> apkFileList) async {
+      DeviceInfo? selectedDevice, List<XFile> apkFileList) async {
     if (selectedDevice == null) {
       return;
     }
@@ -118,7 +130,7 @@ class ADBUtils {
     for (var apkFile in apkFileList) {
       var args = [
         '-s',
-        selectedDevice.host,
+        selectedDevice.serialNumber,
         'push',
         '--sync',
         apkFile.path,

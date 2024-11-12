@@ -7,7 +7,7 @@ import '../data/models/device.dart';
 
 class ApkDragTarget extends StatefulWidget {
   final List<XFile> list;
-  final Device? targetDevice;
+  final DeviceInfo? targetDevice;
   final Function() onInstall;
   final Function() onPush;
 
@@ -68,7 +68,7 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                 Row(
                   children: [
                     Text(
-                      "Selected device: ${widget.targetDevice?.host ?? "None"}",
+                      "Selected device: ${widget.targetDevice?.serialNumber ?? "None"}",
                     ),
                     const SizedBox(width: 10),
                     FilledButton(

@@ -4,7 +4,7 @@ import 'package:adb_tools/data/models/device.dart';
 import 'package:adb_tools/models/output_text_model.dart';
 import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:adb_tools/views/apk_drop_target.dart';
-import 'package:adb_tools/views/history_tile.dart';
+import 'package:adb_tools/views/device_list_tile.dart';
 import 'package:adb_tools/views/output_view.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +22,9 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final Isar _isar = IsarDb.getIns();
-  List<Device> devices = [];
-  Device? selectedDevice;
+  List<DeviceInfo> devices = [];
+  List<DeviceInfo> connectedDevices = [];
+  DeviceInfo? selectedDevice;
   late OutputTextModel model;
   final _scrollController = ScrollController();
   // selected apk files
@@ -31,6 +32,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
+    showConnectedDevices();
+
     model = Provider.of<OutputTextModel>(context, listen: false);
     model.addListener(() {
       // scroll to top when offset is not 0
@@ -42,22 +45,34 @@ class _MainPageState extends State<MainPage> {
     Stream<void> deviceIpsChanged = _isar.devices.watchLazy();
     deviceIpsChanged.listen((_) {
       setState(() {
-        devices = _isar.devices.where().findAllSync();
+        devices = DeviceInfo.merge(_isar.devices.where().findAllSync(), connectedDevices);
       });
     });
-    devices = _isar.devices.where().findAllSync();
     super.initState();
   }
 
   // show connected devices
-  void showConnectedDevices() {
-    ADBUtils.devices();
+  Future<void> showConnectedDevices() async {
+    List<DeviceInfo> listOfDevices = await ADBUtils.devices();
+    setState(() {
+      connectedDevices = listOfDevices;
+      devices =
+          DeviceInfo.merge(_isar.devices.where().findAllSync(), listOfDevices);
+      if (selectedDevice != null) {
+        var idx = devices.indexWhere(
+            (ele) => ele.serialNumber == selectedDevice?.serialNumber);
+        if (idx != -1) {
+          selectedDevice = devices[idx];
+        }
+      }
+    });
   }
 
   // connect to device and save ip address and port to isar
   void onSubmit(String ip, String port) async {
     // connect to device
     bool connected = await ADBUtils.connect('$ip:$port');
+    showConnectedDevices();
     if (!connected) {
       debugPrint("connection failed");
       return;
@@ -90,20 +105,22 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  void onSelect(Device device) {
+  void onSelect(DeviceInfo device) {
     setState(() {
       selectedDevice = device;
     });
   }
 
   // connect to device
-  void onConnect(Device device) async {
-    await ADBUtils.connect(device.host);
+  void onConnect(DeviceInfo device) async {
+    await ADBUtils.connect(device.serialNumber);
+    await showConnectedDevices();
   }
 
   // disconnect device
-  void onDisconnect(Device device) async {
-    await ADBUtils.disconnect(device.host);
+  void onDisconnect(DeviceInfo device) async {
+    await ADBUtils.disconnect(device.serialNumber);
+    await showConnectedDevices();
   }
 
   // delete device from isar
@@ -153,7 +170,7 @@ class _MainPageState extends State<MainPage> {
                       child: ListView.builder(
                         itemCount: devices.length,
                         itemBuilder: (context, index) {
-                          return HistoryTile(
+                          return DeviceListTile(
                             device: devices[index],
                             isSelected: selectedDevice == devices[index],
                             onTap: () {
@@ -185,7 +202,11 @@ class _MainPageState extends State<MainPage> {
             ),
 
             // right side
-            RightSideWidget(model: model, scrollController: _scrollController),
+            RightSideWidget(
+              model: model,
+              scrollController: _scrollController,
+              onShowDevices: showConnectedDevices,
+            ),
           ],
         ),
       ),
@@ -327,10 +348,12 @@ class RightSideWidget extends StatelessWidget {
     super.key,
     required this.model,
     required ScrollController scrollController,
+    required this.onShowDevices,
   }) : _scrollController = scrollController;
 
   final OutputTextModel model;
   final ScrollController _scrollController;
+  final Function onShowDevices;
 
   @override
   Widget build(BuildContext context) {
@@ -344,7 +367,7 @@ class RightSideWidget extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  ADBUtils.devices();
+                  onShowDevices();
                 },
                 child: const Text('Show Devices'),
               ),
