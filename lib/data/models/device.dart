@@ -92,11 +92,12 @@ class DeviceInfo extends Device {
       ..transportId = transportId
       ..name = name
       ..wifi = wifi
-      ..connected = connected;
+      ..connected = connected
+      ..isTitle = isTitle;
   }
 
   @override
   String toString() {
-    return '${super.toString()}   DeviceInfo{serialNumber: $serialNumber, state: $state, product: $product, model: $model, device: $device, transportId: $transportId, name: $name, wifi: $wifi, connected: $connected}';
+    return '${super.toString()}   DeviceInfo{serialNumber: $serialNumber, state: $state, product: $product, model: $model, device: $device, transportId: $transportId, name: $name, wifi: $wifi, connected: $connected}, isTitle: $isTitle';
   }
 }
