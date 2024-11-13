@@ -50,9 +50,7 @@ class DeviceListTile extends StatelessWidget {
     }
 
     String getTitle() {
-      return device.connected
-          ? '${device.serialNumber}       ${device.product}-${device.model}'
-          : device.serialNumber;
+      return '${device.serialNumber}       ${device.product}-${device.model}';
     }
 
     return Padding(
@@ -95,7 +93,7 @@ class DeviceListTile extends StatelessWidget {
                   if (device.connected ||
                       DeviceState.offline.name == device.state) ...[
                     // button to disconnect
-                    IconButton.filled(
+                    IconButton.outlined(
                         onPressed: onDisconnect,
                         icon: const Icon(Icons.link_off)),
                     const SizedBox(width: 8),

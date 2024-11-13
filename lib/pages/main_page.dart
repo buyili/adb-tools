@@ -56,16 +56,40 @@ class _MainPageState extends State<MainPage> {
   // show connected devices
   Future<void> showConnectedDevices() async {
     List<DeviceInfo> listOfDevices = await ADBUtils.devices();
+    var dbDevices = _isar.devices.where().findAllSync();
+    var newDevices = DeviceInfo.merge(dbDevices, listOfDevices);
     setState(() {
       connectedDevices = listOfDevices;
-      devices =
-          DeviceInfo.merge(_isar.devices.where().findAllSync(), listOfDevices);
-      if (selectedDevice != null) {
-        var idx = devices.indexWhere(
-            (ele) => ele.serialNumber == selectedDevice?.serialNumber);
-        if (idx != -1) {
+      devices = newDevices;
+    });
+
+    if (selectedDevice != null) {
+      var idx = devices.indexWhere(
+          (ele) => ele.serialNumber == selectedDevice?.serialNumber);
+      if (idx != -1) {
+        setState(() {
           selectedDevice = devices[idx];
+        });
+      }
+    }
+
+    // Update isar data
+    await _isar.writeTxn(() async {
+      for (var item in dbDevices) {
+        var idx = listOfDevices
+            .indexWhere((ele) => ele.serialNumber == item.serialNumber);
+        if (idx == -1) {
+          continue;
         }
+        final dbDevice = await _isar.devices.get(item.id);
+        if(dbDevice == null) continue;
+        var target = listOfDevices[idx];
+        await _isar.devices.put(dbDevice
+          ..serialNumber = target.serialNumber
+          ..product = target.product
+          ..model = target.model
+          ..device = target.device
+          ..transportId = target.transportId);
       }
     });
   }
@@ -92,17 +116,19 @@ class _MainPageState extends State<MainPage> {
         .ipEqualTo(ip)
         .portEqualTo(port)
         .countSync();
+    var serialNumber = '$ip:$port';
     if (count == 0) {
       _isar.writeTxnSync(() {
         _isar.devices.putSync(
           Device()
             ..ip = ip
-            ..port = port,
+            ..port = port
+            ..serialNumber = serialNumber,
         );
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$ip:$port already exists.')),
+        SnackBar(content: Text('$serialNumber already exists.')),
       );
     }
   }
@@ -114,7 +140,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   // open port for use adb over Wi-Fi
-  void onOpenPort(DeviceInfo device) async{
+  void onOpenPort(DeviceInfo device) async {
     await ADBUtils.openPort(device.serialNumber);
   }
 
@@ -135,7 +161,7 @@ class _MainPageState extends State<MainPage> {
     showDeleteDialog(
       context,
       'Delete Device',
-      'Are you sure you want to delete ${device.host}?',
+      'Are you sure you want to delete ${device.serialNumber}?',
       () {
         _isar.writeTxnSync(() {
           _isar.devices.deleteSync(device.id);

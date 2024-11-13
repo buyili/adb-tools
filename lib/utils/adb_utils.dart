@@ -31,7 +31,7 @@ class ADBUtils {
 
       /// Running in detached mode, so the process will not automatically print
       /// the output.
-      mode: CmdPlusMode.detached(),
+      mode: const CmdPlusMode.detached(),
       throwOnError: false,
       workingDirectory: workingDirectory,
     );

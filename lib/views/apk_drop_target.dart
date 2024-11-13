@@ -20,7 +20,7 @@ class ApkDragTarget extends StatefulWidget {
   });
 
   @override
-  _ApkDragTargetState createState() => _ApkDragTargetState();
+  State<ApkDragTarget> createState() => _ApkDragTargetState();
 }
 
 class _ApkDragTargetState extends State<ApkDragTarget> {
