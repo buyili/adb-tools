@@ -6,6 +6,7 @@ import 'device_list_tile.dart';
 class DeviceList extends StatelessWidget {
   final List<DeviceInfo> devices;
   final DeviceInfo? selectedDevice;
+  final Function(DeviceInfo) onOpenPort;
   final Function(DeviceInfo) onSelect;
   final Function(DeviceInfo) onConnect;
   final Function(DeviceInfo) onDisconnect;
@@ -15,6 +16,7 @@ class DeviceList extends StatelessWidget {
     super.key,
     required this.devices,
     required this.selectedDevice,
+    required this.onOpenPort,
     required this.onSelect,
     required this.onConnect,
     required this.onDisconnect,
@@ -37,6 +39,9 @@ class DeviceList extends StatelessWidget {
               isSelected: selectedDevice == devices[index],
               onTap: () {
                 onSelect(devices[index]);
+              },
+              onOpenPort: (){
+                onOpenPort(devices[index]);
               },
               onConnect: () {
                 onConnect(devices[index]);
