@@ -21,71 +21,86 @@ class DeviceListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     var normalBoxDecoration = BoxDecoration(
-      border: Border.all(
-          color: Colors.grey,
-          width: 1),
+      border: Border.all(color: Colors.grey, width: 1),
       borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-      color: isSelected
-          ? Theme.of(context).primaryColor.withOpacity(0.1)
-          : null,
+      color:
+          isSelected ? Theme.of(context).primaryColor.withOpacity(0.8) : null,
     );
 
     var disconnectedBoxDecoration = BoxDecoration(
-      border: Border.all(
-          color: Colors.grey,
-          width: 1),
+      border: Border.all(color: Colors.grey, width: 1),
       borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-      color: Colors.grey.withOpacity(0.1),
+      color: null,
     );
 
     var selectedBoxDecoration = BoxDecoration(
-      border: Border.all(
-          color: Theme.of(context).primaryColor,
-          width: 1),
+      border: Border.all(color: Theme.of(context).primaryColor, width: 1),
       borderRadius: const BorderRadius.all(Radius.circular(8.0)),
       color: Theme.of(context).primaryColor.withOpacity(0.1),
     );
+
+    Icon renderLeadingIcon() {
+      if (device.connected) {
+        return device.wifi ? const Icon(Icons.wifi) : const Icon(Icons.usb);
+      }
+      return const Icon(Icons.wifi_off);
+    }
+
+    String getTitle() {
+      return device.connected
+          ? '${device.serialNumber}       ${device.product}-${device.model}'
+          : device.serialNumber;
+    }
 
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
       child: MouseRegion(
         cursor: device.connected ? SystemMouseCursors.click : MouseCursor.defer,
         child: GestureDetector(
-          onTap: (){
-            if(device.connected) {
+          onTap: () {
+            if (device.connected) {
               onTap!();
             }
           },
           child: Container(
             padding: const EdgeInsets.all(8.0),
-            decoration: device.connected ? (isSelected ? selectedBoxDecoration : normalBoxDecoration) : disconnectedBoxDecoration,
+            decoration: device.connected
+                ? (isSelected ? selectedBoxDecoration : normalBoxDecoration)
+                : disconnectedBoxDecoration,
             child: Row(
               children: [
+                // icon
+                renderLeadingIcon(),
+                const SizedBox(
+                  width: 8,
+                ),
+
                 // serial number
-                Expanded(child: Text(device.connected ? '${device.serialNumber}       ${device.product}-${device.model}' :device.serialNumber)),
+                Expanded(child: Text(getTitle())),
 
                 if (device.wifi) ...[
-                  if(!device.connected)...[
+                  if (!device.connected) ...[
                     // button to connect
-                    OutlinedButton(
-                        onPressed: onConnect, child: const Icon(Icons.link)),
+                    IconButton.filled(
+                        onPressed: onConnect, icon: const Icon(Icons.link)),
                     const SizedBox(width: 8),
-                  ] else ...[
+                  ],
+                  if (device.connected ||
+                      DeviceState.offline.name == device.state) ...[
                     // button to disconnect
-                    OutlinedButton(
+                    IconButton.filled(
                         onPressed: onDisconnect,
-                        child: const Icon(Icons.link_off)),
+                        icon: const Icon(Icons.link_off)),
                     const SizedBox(width: 8),
                   ]
                 ],
 
                 if (device.id > 0) ...[
                   // button to delete history
-                  OutlinedButton(
+                  IconButton.outlined(
                       onPressed: onDelete,
-                      child: const Icon(
+                      icon: const Icon(
                         Icons.delete,
                         color: Colors.red,
                       )),

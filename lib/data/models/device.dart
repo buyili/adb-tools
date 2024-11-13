@@ -38,6 +38,7 @@ class DeviceInfo extends Device {
   String? name;
   bool wifi = false;
   bool connected = false;
+  bool isTitle = false;
 
   static DeviceInfo fromDevice(Device device) {
     return DeviceInfo()
@@ -57,6 +58,7 @@ class DeviceInfo extends Device {
     }
     var historyList = devices.map((device) => fromDevice(device)).toList();
     if (infos.isEmpty) {
+      historyList.insert(0, DeviceInfo()..isTitle = true);
       return historyList;
     }
     infos = infos.map((item)=>item.clone()).toList();
@@ -71,6 +73,8 @@ class DeviceInfo extends Device {
         ..port = device.port;
       historyList.removeAt(idx);
     }
+    // add empty object to render title.
+    infos.add(DeviceInfo()..isTitle = true);
     infos.addAll(historyList);
     return infos;
   }

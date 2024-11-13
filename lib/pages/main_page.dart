@@ -4,7 +4,7 @@ import 'package:adb_tools/data/models/device.dart';
 import 'package:adb_tools/models/output_text_model.dart';
 import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:adb_tools/views/apk_drop_target.dart';
-import 'package:adb_tools/views/device_list_tile.dart';
+import 'package:adb_tools/views/device_list.dart';
 import 'package:adb_tools/views/output_view.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +27,7 @@ class _MainPageState extends State<MainPage> {
   DeviceInfo? selectedDevice;
   late OutputTextModel model;
   final _scrollController = ScrollController();
+
   // selected apk files
   final List<XFile> _apkFileList = [];
 
@@ -45,7 +46,8 @@ class _MainPageState extends State<MainPage> {
     Stream<void> deviceIpsChanged = _isar.devices.watchLazy();
     deviceIpsChanged.listen((_) {
       setState(() {
-        devices = DeviceInfo.merge(_isar.devices.where().findAllSync(), connectedDevices);
+        devices = DeviceInfo.merge(
+            _isar.devices.where().findAllSync(), connectedDevices);
       });
     });
     super.initState();
@@ -107,7 +109,7 @@ class _MainPageState extends State<MainPage> {
 
   void onSelect(DeviceInfo device) {
     setState(() {
-      selectedDevice = device;
+      selectedDevice = selectedDevice == device ? null : device;
     });
   }
 
@@ -143,7 +145,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   // push file to device
-  void onPush(){
+  void onPush() {
     ADBUtils.push(selectedDevice, _apkFileList);
   }
 
@@ -163,32 +165,14 @@ class _MainPageState extends State<MainPage> {
                     onSave: onSave,
                   ),
 
-                  // history list
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 24.0),
-                      child: ListView.builder(
-                        itemCount: devices.length,
-                        itemBuilder: (context, index) {
-                          return DeviceListTile(
-                            device: devices[index],
-                            isSelected: selectedDevice == devices[index],
-                            onTap: () {
-                              onSelect(devices[index]);
-                            },
-                            onConnect: () {
-                              onConnect(devices[index]);
-                            },
-                            onDisconnect: () {
-                              onDisconnect(devices[index]);
-                            },
-                            onDelete: () {
-                              onDelete(devices[index]);
-                            },
-                          );
-                        },
-                      ),
-                    ),
+                  // device list
+                  DeviceList(
+                    devices: devices,
+                    selectedDevice: selectedDevice,
+                    onSelect: onSelect,
+                    onConnect: onConnect,
+                    onDisconnect: onDisconnect,
+                    onDelete: onDelete,
                   ),
 
                   ApkDragTarget(
@@ -218,6 +202,7 @@ class _MainPageState extends State<MainPage> {
 class TopForm extends StatefulWidget {
   final Function onSubmit;
   final Function onSave;
+
   const TopForm({super.key, required this.onSubmit, required this.onSave});
 
   @override
