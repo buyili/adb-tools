@@ -50,7 +50,8 @@ class DeviceListTile extends StatelessWidget {
     }
 
     String getTitle() {
-      return '${device.serialNumber}       ${device.product}-${device.model}';
+      var deviceName = (device.product!=null && device.product!.isNotEmpty) ? '${device.product}-${device.model}' : '';
+      return '${device.serialNumber}       $deviceName';
     }
 
     return Padding(
