@@ -24,7 +24,7 @@ Future<void> main() async {
       final frame = Rect.fromLTWH(left, top, width, height);
       window_size.setWindowFrame(frame);
       window_size.setWindowMinSize(Size(0.8 * width, 0.8 * height));
-      window_size.setWindowMaxSize(Size(1.5 * width, 1.5 * height));
+      window_size.setWindowMaxSize(Size(screenFrame.width, screenFrame.height));
       window_size.setWindowTitle('ADB Tools');
     }
   });
