@@ -60,7 +60,7 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
         });
       },
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16),
+        margin: const EdgeInsets.only(right: 16),
         child: Column(
           children: [
             Row(

@@ -191,7 +191,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: const EdgeInsets.only(bottom: 24.0),
+        padding: const EdgeInsets.all(12.0),
         child: Row(
           children: [
             Expanded(
@@ -259,7 +259,7 @@ class _TopFormState extends State<TopForm> {
     return Form(
       key: _formKey,
       child: Padding(
-        padding: const EdgeInsets.only(left: 12.0, top: 12),
+        padding: const EdgeInsets.only(top: 12),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -384,7 +384,7 @@ class RightSideWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 400,
-      padding: const EdgeInsets.all(12.0),
+      // padding: const EdgeInsets.all(12.0),
       child: Column(
         children: [
           Row(

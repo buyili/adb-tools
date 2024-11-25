@@ -66,7 +66,7 @@ class DivideTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.only(left: 16, top: 18, right: 8, bottom: 0),
+      padding: EdgeInsets.only(top: 18, right: 8, bottom: 0),
       child: Text('Previously connected devices'),
     );
   }
