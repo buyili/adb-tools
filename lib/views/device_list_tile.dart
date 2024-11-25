@@ -44,7 +44,7 @@ class DeviceListTile extends StatelessWidget {
 
     Icon renderLeadingIcon() {
       if (device.connected) {
-        return device.wifi ? const Icon(Icons.wifi) : const Icon(Icons.usb);
+        return device.wifi ? Icon(Icons.wifi, color: Theme.of(context).primaryColor,) : const Icon(Icons.usb);
       }
       return const Icon(Icons.wifi_off);
     }
