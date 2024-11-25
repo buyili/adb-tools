@@ -66,8 +66,16 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Selected device: ${widget.targetDevice?.serialNumber ?? "None"}",
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Selected device:",
+                    ),
+                    Text(
+                      widget.targetDevice?.serialNumber ?? "None",
+                    ),
+                  ],
                 ),
 
                 Row(
