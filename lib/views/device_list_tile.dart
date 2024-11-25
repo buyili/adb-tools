@@ -97,7 +97,7 @@ class DeviceListTile extends StatelessWidget {
                   if (device.connected ||
                       DeviceState.offline.name == device.state) ...[
                     // button to disconnect
-                    IconButton.outlined(
+                    IconButton.filled(
                         onPressed: onDisconnect,
                         icon: const Icon(Icons.link_off)),
                     const SizedBox(width: 8),
