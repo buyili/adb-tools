@@ -32,6 +32,7 @@ class _RightSideWidgetState extends State<RightSideWidget> {
       width: 400,
       // padding: const EdgeInsets.all(12.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextField(
             keyboardType: TextInputType.multiline,
@@ -41,6 +42,9 @@ class _RightSideWidgetState extends State<RightSideWidget> {
               labelText: 'Enter Command',
             ),
             controller: _textController,
+          ),
+          const Text(
+            'eg: version, devices, devices -l, shell wm size',
           ),
           const SizedBox(height: 10.0),
           Row(
