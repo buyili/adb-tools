@@ -87,8 +87,11 @@ class DeviceListTile extends StatelessWidget {
                 if (device.wifi) ...[
                   if (!device.connected) ...[
                     // button to connect
-                    IconButton.filled(
-                        onPressed: onConnect, icon: const Icon(Icons.link)),
+                    IconButton.outlined(
+                      onPressed: onConnect,
+                      icon: const Icon(Icons.link),
+                      color: Theme.of(context).primaryColor,
+                    ),
                     const SizedBox(width: 8),
                   ],
                   if (device.connected ||
