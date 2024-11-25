@@ -10,6 +10,7 @@ class ApkDragTarget extends StatefulWidget {
   final DeviceInfo? targetDevice;
   final Function() onInstall;
   final Function() onPush;
+  final Function() onClearAll;
 
   const ApkDragTarget({
     super.key,
@@ -17,6 +18,7 @@ class ApkDragTarget extends StatefulWidget {
     required this.onInstall,
     required this.onPush,
     this.targetDevice,
+    required this.onClearAll,
   });
 
   @override
@@ -64,12 +66,12 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Drag and drop APK files here"),
+                Text(
+                  "Selected device: ${widget.targetDevice?.serialNumber ?? "None"}",
+                ),
+
                 Row(
                   children: [
-                    Text(
-                      "Selected device: ${widget.targetDevice?.serialNumber ?? "None"}",
-                    ),
                     const SizedBox(width: 10),
                     FilledButton(
                       onPressed: (widget.targetDevice != null &&
@@ -86,6 +88,13 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                           : null,
                       child: const Text("Push"),
                     ),
+                    const SizedBox(width: 16),
+                    FilledButton(
+                      onPressed: (widget.list.isNotEmpty)
+                          ? widget.onClearAll
+                          : null,
+                      child: const Text("Clear All"),
+                    ),
                   ],
                 ),
               ],
@@ -99,7 +108,7 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                 color: Theme.of(context).primaryColor.withOpacity(0.1),
               ),
               child: widget.list.isEmpty
-                  ? const Center(child: Text("Drop APK files here"))
+                  ? const Center(child: Text("Drag and drop APK or other files here"))
                   : ListView.builder(
                       itemCount: widget.list.length,
                       itemBuilder: (context, index) {

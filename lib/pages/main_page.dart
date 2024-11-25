@@ -180,6 +180,13 @@ class _MainPageState extends State<MainPage> {
     ADBUtils.push(selectedDevice, _apkFileList);
   }
 
+  // clear all apk files
+  void onClearAll() {
+    setState(() {
+      _apkFileList.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -212,6 +219,7 @@ class _MainPageState extends State<MainPage> {
                     targetDevice: selectedDevice,
                     onInstall: onInstall,
                     onPush: onPush,
+                    onClearAll: onClearAll,
                   ),
                 ],
               ),
