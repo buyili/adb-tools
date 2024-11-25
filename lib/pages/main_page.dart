@@ -5,7 +5,7 @@ import 'package:adb_tools/models/output_text_model.dart';
 import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:adb_tools/views/apk_drop_target.dart';
 import 'package:adb_tools/views/device_list.dart';
-import 'package:adb_tools/views/output_view.dart';
+import 'package:adb_tools/views/main_page_right_side.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
@@ -92,6 +92,25 @@ class _MainPageState extends State<MainPage> {
           ..transportId = target.transportId);
       }
     });
+  }
+
+  // execute enter command
+  Future<void> onExecuteEnterCommand(text) async {
+    String command = text;
+    if (command.isEmpty) {
+      return;
+    }
+    command = command.trim();
+    command = command.replaceAll('adb', '');
+    command = command.replaceAll('\n', '');
+    var args = command.split(" ");
+    args = args.where((arg) => arg.isNotEmpty).toList();
+
+    if (selectedDevice != null) {
+      args = ['-s', selectedDevice!.serialNumber, ...args];
+    }
+
+    await ADBUtils.runCmd('adb', args);
   }
 
   // connect to device and save ip address and port to isar
@@ -230,6 +249,7 @@ class _MainPageState extends State<MainPage> {
               model: model,
               scrollController: _scrollController,
               onShowDevices: showConnectedDevices,
+              onExecute: onExecuteEnterCommand,
             ),
           ],
         ),
@@ -367,49 +387,3 @@ Future<dynamic> showDeleteDialog(
   );
 }
 
-/// right side widget
-class RightSideWidget extends StatelessWidget {
-  const RightSideWidget({
-    super.key,
-    required this.model,
-    required ScrollController scrollController,
-    required this.onShowDevices,
-  }) : _scrollController = scrollController;
-
-  final OutputTextModel model;
-  final ScrollController _scrollController;
-  final Function onShowDevices;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 400,
-      // padding: const EdgeInsets.all(12.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  onShowDevices();
-                },
-                child: const Text('Show Devices'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  model.clear();
-                },
-                child: const Text('Clear'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10.0),
-          Expanded(
-            child: OutputView(scrollController: _scrollController),
-          ),
-        ],
-      ),
-    );
-  }
-}
