@@ -8,6 +8,7 @@ class DeviceListTile extends StatelessWidget {
   final Function()? onConnect;
   final Function()? onDisconnect;
   final Function()? onDelete;
+  final Function()? onGetIpAndConnect;
   final bool isSelected;
 
   const DeviceListTile({
@@ -19,6 +20,7 @@ class DeviceListTile extends StatelessWidget {
     required this.onDisconnect,
     required this.onDelete,
     this.isSelected = false,
+    this.onGetIpAndConnect,
   });
 
   @override
@@ -81,7 +83,16 @@ class DeviceListTile extends StatelessWidget {
                 Expanded(child: Text(getTitle())),
 
                 if (!device.wifi) ...[
-                  OutlinedButton(onPressed: onOpenPort, child: const Text('Open Port'))
+                  OutlinedButton(onPressed: onOpenPort, child: const Text('Open Port')),
+
+                  const SizedBox(width: 8),
+
+                  // button to connect
+                  IconButton.outlined(
+                    onPressed: onGetIpAndConnect,
+                    icon: const Icon(Icons.link),
+                    color: Theme.of(context).primaryColor,
+                  ),
                 ],
 
                 if (device.wifi) ...[

@@ -82,7 +82,7 @@ class _MainPageState extends State<MainPage> {
           continue;
         }
         final dbDevice = await _isar.devices.get(item.id);
-        if(dbDevice == null) continue;
+        if (dbDevice == null) continue;
         var target = listOfDevices[idx];
         await _isar.devices.put(dbDevice
           ..serialNumber = target.serialNumber
@@ -163,9 +163,35 @@ class _MainPageState extends State<MainPage> {
     await ADBUtils.openPort(device.serialNumber);
   }
 
-  // connect to device
+  // connect to device by host and port
   void onConnect(DeviceInfo device) async {
     await ADBUtils.connect(device.serialNumber);
+    await showConnectedDevices();
+  }
+
+  // get device ip and connect
+  void onGetIpAndConnect(DeviceInfo device) async {
+    var ip = await ADBUtils.getDeviceIp(device.serialNumber);
+    if (ip.isEmpty) {
+      // show snackbar if ip is empty
+      var snackBar = SnackBar(
+        content: Text('Not found device ip for ${device.serialNumber}.'),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {
+            // Some code to undo the change.
+            ScaffoldMessenger.of(context).clearSnackBars();
+          },
+        ),
+      );
+
+      // Find the ScaffoldMessenger in the widget tree
+      // and use it to show a SnackBar.
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    await ADBUtils.connect(ip);
     await showConnectedDevices();
   }
 
@@ -231,6 +257,7 @@ class _MainPageState extends State<MainPage> {
                     onConnect: onConnect,
                     onDisconnect: onDisconnect,
                     onDelete: onDelete,
+                    onGetIpAndConnect: onGetIpAndConnect,
                   ),
 
                   ApkDragTarget(
@@ -386,4 +413,3 @@ Future<dynamic> showDeleteDialog(
     },
   );
 }
-

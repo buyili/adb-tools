@@ -11,6 +11,7 @@ class DeviceList extends StatelessWidget {
   final Function(DeviceInfo) onConnect;
   final Function(DeviceInfo) onDisconnect;
   final Function(DeviceInfo) onDelete;
+  final Function(DeviceInfo) onGetIpAndConnect;
 
   const DeviceList({
     super.key,
@@ -21,6 +22,7 @@ class DeviceList extends StatelessWidget {
     required this.onConnect,
     required this.onDisconnect,
     required this.onDelete,
+    required this.onGetIpAndConnect,
   });
 
   @override
@@ -51,6 +53,9 @@ class DeviceList extends StatelessWidget {
               },
               onDelete: () {
                 onDelete(devices[index]);
+              },
+              onGetIpAndConnect: () {
+                onGetIpAndConnect(devices[index]);
               },
             );
           },

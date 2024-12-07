@@ -161,4 +161,25 @@ class ADBUtils {
     cmdPlus.close();
   }
 
+  static Future<String> getDeviceIp(String serialNumber) async {
+    var cmd = 'adb -s $serialNumber shell ip addr show wlan0';
+    final result = await runCmd(cmd, []);
+
+    if(result.error.isNotEmpty){
+      return "";
+    }
+
+    return getIp(result.output);
+  }
+
+  static String getIp(String text){
+    var pattern = RegExp(
+        r'inet\s(\d+?\.\d+?\.\d+?\.\d+?)/\d+');
+    var allMatches = pattern.allMatches(text);
+    if(allMatches.isNotEmpty){
+      return allMatches.first.group(1).toString();
+    }
+    return "";
+  }
+
 }
