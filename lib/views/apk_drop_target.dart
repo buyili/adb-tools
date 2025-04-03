@@ -77,7 +77,6 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                     ),
                   ],
                 ),
-
                 Row(
                   children: [
                     const SizedBox(width: 10),
@@ -98,9 +97,8 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                     ),
                     const SizedBox(width: 16),
                     FilledButton(
-                      onPressed: (widget.list.isNotEmpty)
-                          ? widget.onClearAll
-                          : null,
+                      onPressed:
+                          (widget.list.isNotEmpty) ? widget.onClearAll : null,
                       child: const Text("Clear All"),
                     ),
                   ],
@@ -113,10 +111,13 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey, width: 1),
                 borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                color: _dragging
+                    ? Colors.black26
+                    : Theme.of(context).primaryColor.withValues(alpha: 0.1),
               ),
               child: widget.list.isEmpty
-                  ? const Center(child: Text("Drag and drop APK or other files here"))
+                  ? const Center(
+                      child: Text("Drag and drop APK or other files here"))
                   : ListView.builder(
                       itemCount: widget.list.length,
                       itemBuilder: (context, index) {
