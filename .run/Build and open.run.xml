@@ -13,7 +13,7 @@
     <option name="EXECUTE_SCRIPT_FILE" value="false" />
     <envs />
     <method v="2">
-      <option name="RunConfigurationTask" enabled="true" run_configuration_name="flutter build windows" run_configuration_type="ShConfigurationType" />
+      <option name="RunConfigurationTask" enabled="false" run_configuration_name="Flutter build windows" run_configuration_type="ShConfigurationType" />
       <option name="RunConfigurationTask" enabled="true" run_configuration_name="Open Windows Release Dir" run_configuration_type="ShConfigurationType" />
     </method>
   </configuration>

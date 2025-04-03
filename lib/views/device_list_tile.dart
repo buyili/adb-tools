@@ -29,7 +29,7 @@ class DeviceListTile extends StatelessWidget {
       border: Border.all(color: Colors.grey, width: 1),
       borderRadius: const BorderRadius.all(Radius.circular(8.0)),
       color:
-          isSelected ? Theme.of(context).primaryColor.withOpacity(0.8) : null,
+          isSelected ? Theme.of(context).primaryColor.withValues(alpha: 0.8) : null,
     );
 
     var disconnectedBoxDecoration = BoxDecoration(
@@ -41,7 +41,7 @@ class DeviceListTile extends StatelessWidget {
     var selectedBoxDecoration = BoxDecoration(
       border: Border.all(color: Theme.of(context).primaryColor, width: 1),
       borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-      color: Theme.of(context).primaryColor.withOpacity(0.1),
+      color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
     );
 
     Icon renderLeadingIcon() {

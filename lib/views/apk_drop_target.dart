@@ -113,7 +113,7 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey, width: 1),
                 borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
               ),
               child: widget.list.isEmpty
                   ? const Center(child: Text("Drag and drop APK or other files here"))

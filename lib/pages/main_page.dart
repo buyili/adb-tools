@@ -27,6 +27,7 @@ class _MainPageState extends State<MainPage> {
   DeviceInfo? selectedDevice;
   late OutputTextModel model;
   final _scrollController = ScrollController();
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   // selected apk files
   final List<XFile> _apkFileList = [];
@@ -187,7 +188,7 @@ class _MainPageState extends State<MainPage> {
 
       // Find the ScaffoldMessenger in the widget tree
       // and use it to show a SnackBar.
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      scaffoldMessengerKey.currentState?.showSnackBar(snackBar);
       return;
     }
 
@@ -234,51 +235,54 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  // text input
-                  TopForm(
-                    onSubmit: onSubmit,
-                    onSave: onSave,
-                  ),
+    return ScaffoldMessenger(
+      key: scaffoldMessengerKey,
+      child: Scaffold(
+        body: Container(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    // text input
+                    TopForm(
+                      onSubmit: onSubmit,
+                      onSave: onSave,
+                    ),
 
-                  // device list
-                  DeviceList(
-                    devices: devices,
-                    selectedDevice: selectedDevice,
-                    onSelect: onSelect,
-                    onOpenPort: onOpenPort,
-                    onConnect: onConnect,
-                    onDisconnect: onDisconnect,
-                    onDelete: onDelete,
-                    onGetIpAndConnect: onGetIpAndConnect,
-                  ),
+                    // device list
+                    DeviceList(
+                      devices: devices,
+                      selectedDevice: selectedDevice,
+                      onSelect: onSelect,
+                      onOpenPort: onOpenPort,
+                      onConnect: onConnect,
+                      onDisconnect: onDisconnect,
+                      onDelete: onDelete,
+                      onGetIpAndConnect: onGetIpAndConnect,
+                    ),
 
-                  ApkDragTarget(
-                    list: _apkFileList,
-                    targetDevice: selectedDevice,
-                    onInstall: onInstall,
-                    onPush: onPush,
-                    onClearAll: onClearAll,
-                  ),
-                ],
+                    ApkDragTarget(
+                      list: _apkFileList,
+                      targetDevice: selectedDevice,
+                      onInstall: onInstall,
+                      onPush: onPush,
+                      onClearAll: onClearAll,
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            // right side
-            RightSideWidget(
-              model: model,
-              scrollController: _scrollController,
-              onShowDevices: showConnectedDevices,
-              onExecute: onExecuteEnterCommand,
-            ),
-          ],
+              // right side
+              RightSideWidget(
+                model: model,
+                scrollController: _scrollController,
+                onShowDevices: showConnectedDevices,
+                onExecute: onExecuteEnterCommand,
+              ),
+            ],
+          ),
         ),
       ),
     );
