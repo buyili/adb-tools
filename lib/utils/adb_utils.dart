@@ -154,7 +154,7 @@ class ADBUtils {
     cmdPlus.close();
   }
 
-  static openPort(String serialNumber) async {
+  static openTcpipPort(String serialNumber) async {
     var cmd = 'adb -s $serialNumber tcpip 5555';
     await runCmd(cmd, []);
 

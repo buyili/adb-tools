@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class DeviceListTile extends StatelessWidget {
   final DeviceInfo device;
   final Function()? onTap;
-  final Function()? onOpenPort;
+  final Function()? onOpenTcpipPort;
   final Function()? onConnect;
   final Function()? onDisconnect;
   final Function()? onDelete;
@@ -15,7 +15,7 @@ class DeviceListTile extends StatelessWidget {
     super.key,
     required this.device,
     this.onTap,
-    this.onOpenPort,
+    this.onOpenTcpipPort,
     required this.onConnect,
     required this.onDisconnect,
     required this.onDelete,
@@ -83,7 +83,7 @@ class DeviceListTile extends StatelessWidget {
                 Expanded(child: Text(getTitle())),
 
                 if (!device.wifi) ...[
-                  OutlinedButton(onPressed: onOpenPort, child: const Text('Open Port')),
+                  OutlinedButton(onPressed: onOpenTcpipPort, child: const Text('Open TCP/IP Connection Port')),
 
                   const SizedBox(width: 8),
 

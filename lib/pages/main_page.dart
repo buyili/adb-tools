@@ -160,8 +160,8 @@ class _MainPageState extends State<MainPage> {
   }
 
   // open port for use adb over Wi-Fi
-  void onOpenPort(DeviceInfo device) async {
-    await ADBUtils.openPort(device.serialNumber);
+  void onOpenTcpipPort(DeviceInfo device) async {
+    await ADBUtils.openTcpipPort(device.serialNumber);
   }
 
   // connect to device by host and port
@@ -256,7 +256,7 @@ class _MainPageState extends State<MainPage> {
                       devices: devices,
                       selectedDevice: selectedDevice,
                       onSelect: onSelect,
-                      onOpenPort: onOpenPort,
+                      onOpenTcpipPort: onOpenTcpipPort,
                       onConnect: onConnect,
                       onDisconnect: onDisconnect,
                       onDelete: onDelete,
