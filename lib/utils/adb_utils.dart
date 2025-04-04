@@ -102,7 +102,13 @@ class ADBUtils {
     }
 
     for (var apkFile in apkFileList) {
-      var args = ['-s', selectedDevice.serialNumber, 'install', '-r', apkFile.path];
+      var args = [
+        '-s',
+        selectedDevice.serialNumber,
+        'install',
+        '-r',
+        apkFile.path
+      ];
       await runCmd('adb', args, argsSerialize: (args) {
         return args
             .asMap()
@@ -161,25 +167,31 @@ class ADBUtils {
     cmdPlus.close();
   }
 
+  static Future<bool> checkTcpipOpened(String serialNumber) async {
+    var cmd = 'adb -s $serialNumber shell getprop service.adb.tcp.port';
+    var result = await runCmd(cmd, []);
+
+    cmdPlus.close();
+    return RegExp(r'\d+').hasMatch(result.output);
+  }
+
   static Future<String> getDeviceIp(String serialNumber) async {
     var cmd = 'adb -s $serialNumber shell ip addr show wlan0';
     final result = await runCmd(cmd, []);
 
-    if(result.error.isNotEmpty){
+    if (result.error.isNotEmpty) {
       return "";
     }
 
     return getIp(result.output);
   }
 
-  static String getIp(String text){
-    var pattern = RegExp(
-        r'inet\s(\d+?\.\d+?\.\d+?\.\d+?)/\d+');
+  static String getIp(String text) {
+    var pattern = RegExp(r'inet\s(\d+?\.\d+?\.\d+?\.\d+?)/\d+');
     var allMatches = pattern.allMatches(text);
-    if(allMatches.isNotEmpty){
+    if (allMatches.isNotEmpty) {
       return allMatches.first.group(1).toString();
     }
     return "";
   }
-
 }

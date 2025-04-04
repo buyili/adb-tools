@@ -27,7 +27,8 @@ class _MainPageState extends State<MainPage> {
   DeviceInfo? selectedDevice;
   late OutputTextModel model;
   final _scrollController = ScrollController();
-  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   // selected apk files
   final List<XFile> _apkFileList = [];
@@ -115,7 +116,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   // connect to device and save ip address and port to isar
-  void onSubmit(String ip, String port) async {
+  void onConnectInputIPAddress(String ip, String port) async {
     // connect to device
     bool connected = await ADBUtils.connect('$ip:$port');
     showConnectedDevices();
@@ -124,11 +125,12 @@ class _MainPageState extends State<MainPage> {
       return;
     }
 
-    onSave(ip, port);
+    onSaveDeviceIPAddressToDB(ip, port);
   }
 
   // save ip address and port to isar
-  void onSave(String ip, String port) async {
+  void onSaveDeviceIPAddressToDB(String ip, String port,
+      {bool showExistsSnackBar = true}) async {
     // save ip address and port to isar
     int count = _isar.devices
         .where()
@@ -147,9 +149,11 @@ class _MainPageState extends State<MainPage> {
         );
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$serialNumber already exists.')),
-      );
+      if (showExistsSnackBar) {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(content: Text('$serialNumber already exists.')),
+        );
+      }
     }
   }
 
@@ -172,6 +176,16 @@ class _MainPageState extends State<MainPage> {
 
   // get device ip and connect
   void onGetIpAndConnect(DeviceInfo device) async {
+    // check tcpip opened
+    var tcpipOpened = await ADBUtils.checkTcpipOpened(device.serialNumber);
+    if (!tcpipOpened) {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        const SnackBar(content: Text('Please open tcpip port first.')),
+      );
+      return;
+    }
+
+    // get device ip
     var ip = await ADBUtils.getDeviceIp(device.serialNumber);
     if (ip.isEmpty) {
       // show snackbar if ip is empty
@@ -193,6 +207,7 @@ class _MainPageState extends State<MainPage> {
     }
 
     await ADBUtils.connect(ip);
+    onSaveDeviceIPAddressToDB(ip, "5555", showExistsSnackBar: false);
     await showConnectedDevices();
   }
 
@@ -247,8 +262,8 @@ class _MainPageState extends State<MainPage> {
                   children: [
                     // text input
                     TopForm(
-                      onSubmit: onSubmit,
-                      onSave: onSave,
+                      onSubmit: onConnectInputIPAddress,
+                      onSave: onSaveDeviceIPAddressToDB,
                     ),
 
                     // device list
