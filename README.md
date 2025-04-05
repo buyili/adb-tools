@@ -2,7 +2,7 @@
 
 A simple GUI for ADB.
 
-![](.README_images/b9f2312e.png)
+![img_1.png](.README_images/img_1.png)
 
 
 ## output example
