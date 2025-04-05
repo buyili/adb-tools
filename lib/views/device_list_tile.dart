@@ -1,3 +1,4 @@
+import 'package:adb_tools/components/copyable_text.dart';
 import 'package:adb_tools/data/models/device.dart';
 import 'package:flutter/material.dart';
 
@@ -28,8 +29,9 @@ class DeviceListTile extends StatelessWidget {
     var normalBoxDecoration = BoxDecoration(
       border: Border.all(color: Colors.grey, width: 1),
       borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-      color:
-          isSelected ? Theme.of(context).primaryColor.withValues(alpha: 0.8) : null,
+      color: isSelected
+          ? Theme.of(context).primaryColor.withValues(alpha: 0.8)
+          : null,
     );
 
     var disconnectedBoxDecoration = BoxDecoration(
@@ -46,13 +48,20 @@ class DeviceListTile extends StatelessWidget {
 
     Icon renderLeadingIcon() {
       if (device.connected) {
-        return device.wifi ? Icon(Icons.wifi, color: Theme.of(context).primaryColor,) : const Icon(Icons.usb);
+        return device.wifi
+            ? Icon(
+                Icons.wifi,
+                color: Theme.of(context).primaryColor,
+              )
+            : const Icon(Icons.usb);
       }
       return const Icon(Icons.wifi_off);
     }
 
     String getTitle() {
-      var deviceName = (device.product!=null && device.product!.isNotEmpty) ? '${device.product}-${device.model}' : '';
+      var deviceName = (device.product != null && device.product!.isNotEmpty)
+          ? '${device.product}-${device.model}'
+          : '';
       return '${device.serialNumber}       $deviceName';
     }
 
@@ -80,10 +89,12 @@ class DeviceListTile extends StatelessWidget {
                 ),
 
                 // serial number
-                Expanded(child: Text(getTitle())),
+                Expanded(child: TileTitle(device: device)),
 
                 if (!device.wifi) ...[
-                  OutlinedButton(onPressed: onOpenTcpipPort, child: const Text('Open TCP/IP Connection Port')),
+                  OutlinedButton(
+                      onPressed: onOpenTcpipPort,
+                      child: const Text('Open TCP/IP Connection Port')),
 
                   const SizedBox(width: 8),
 
@@ -129,6 +140,25 @@ class DeviceListTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class TileTitle extends StatelessWidget {
+  final DeviceInfo device;
+
+  const TileTitle({super.key, required this.device});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        CopyableText(device.serialNumber),
+        const SizedBox(width: 32),
+        CopyableText((device.product != null && device.product!.isNotEmpty)
+            ? '${device.product}-${device.model}'
+            : '')
+      ],
     );
   }
 }
