@@ -8,6 +8,7 @@ import '../data/models/device.dart';
 class ApkDragTarget extends StatefulWidget {
   final List<XFile> list;
   final DeviceInfo? targetDevice;
+  final Function() onStartShizuku;
   final Function() onInstall;
   final Function() onPush;
   final Function() onClearAll;
@@ -18,7 +19,7 @@ class ApkDragTarget extends StatefulWidget {
     required this.onInstall,
     required this.onPush,
     this.targetDevice,
-    required this.onClearAll,
+    required this.onClearAll, required this.onStartShizuku,
   });
 
   @override
@@ -30,6 +31,9 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
 
   @override
   Widget build(BuildContext context) {
+    var isSelectedDevice = (widget.targetDevice != null);
+    var isSelectedDeviceAndFiles =
+        (widget.targetDevice != null && widget.list.isNotEmpty);
     return DropTarget(
       onDragDone: (detail) {
         var files = detail.files.where((file) {
@@ -81,18 +85,17 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                   children: [
                     const SizedBox(width: 10),
                     FilledButton(
-                      onPressed: (widget.targetDevice != null &&
-                              widget.list.isNotEmpty)
-                          ? widget.onInstall
-                          : null,
+                      onPressed: isSelectedDevice ? widget.onStartShizuku : null,
+                      child: const Text("Start Shizuku"),
+                    ),
+                    const SizedBox(width: 10),
+                    FilledButton(
+                      onPressed: isSelectedDeviceAndFiles ? widget.onInstall : null,
                       child: const Text("Install"),
                     ),
                     const SizedBox(width: 10),
                     FilledButton(
-                      onPressed: (widget.targetDevice != null &&
-                              widget.list.isNotEmpty)
-                          ? widget.onPush
-                          : null,
+                      onPressed: isSelectedDeviceAndFiles ? widget.onPush : null,
                       child: const Text("Push"),
                     ),
                     const SizedBox(width: 16),

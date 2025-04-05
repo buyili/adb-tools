@@ -194,4 +194,9 @@ class ADBUtils {
     }
     return "";
   }
+
+  static void startShizuku(String serialNumber) {
+    var cmd = 'adb -s $serialNumber shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh';
+    runCmd(cmd, []);
+  }
 }

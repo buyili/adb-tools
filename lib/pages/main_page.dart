@@ -231,6 +231,11 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  // start shizuku
+  void onStartShizuku() {
+    ADBUtils.startShizuku(selectedDevice!.serialNumber);
+  }
+
   // install apk to device
   void onInstall() {
     ADBUtils.install(selectedDevice, _apkFileList);
@@ -281,6 +286,7 @@ class _MainPageState extends State<MainPage> {
                     ApkDragTarget(
                       list: _apkFileList,
                       targetDevice: selectedDevice,
+                      onStartShizuku: onStartShizuku,
                       onInstall: onInstall,
                       onPush: onPush,
                       onClearAll: onClearAll,
