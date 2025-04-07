@@ -211,9 +211,14 @@ class _MainPageState extends State<MainPage> {
     await showConnectedDevices();
   }
 
-  // disconnect device
+  // disconnect device on TCP/IP
   void onDisconnect(DeviceInfo device) async {
-    await ADBUtils.disconnect(device.serialNumber);
+    var success = await ADBUtils.disconnect(device.serialNumber);
+    if (success && device == selectedDevice){
+      setState(() {
+        selectedDevice = null;
+      });
+    }
     await showConnectedDevices();
   }
 
