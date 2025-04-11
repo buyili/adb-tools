@@ -1,5 +1,8 @@
 name: Build ADB Tools
-on: []
+on: 
+  push:
+    branches:
+      - main
 jobs:
   build:
     runs-on: windows-latest
