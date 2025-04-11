@@ -1,5 +1,5 @@
 name: Build ADB Tools
-on: [push]
+on: []
 jobs:
   build:
     runs-on: windows-latest
