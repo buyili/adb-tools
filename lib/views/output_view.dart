@@ -33,12 +33,24 @@ class OutputView extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SelectableText(
-                    task.cmd,
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    children: [
+                      SelectableText(
+                        task.cmd,
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        task.status,
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: CmdTaskStatus.getColor(task.status),
+                        ),
+                      ),
+                    ],
                   ),
                   const Divider(height: 1.0),
                   SelectableText(task.output, style: _textStyle),

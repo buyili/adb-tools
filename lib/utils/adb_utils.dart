@@ -4,6 +4,8 @@ import 'package:adb_tools/utils/cmd_plus_wrap.dart';
 import 'package:cmd_plus/cmd_plus.dart';
 import 'package:cross_file/cross_file.dart';
 
+import '../models/cmd_task.dart';
+
 typedef ArgsSerializeCallback = String Function(List<String> args);
 
 class ADBUtils {
@@ -38,6 +40,7 @@ class ADBUtils {
 
     model.updateTask(taskIndex,
         '${result.error.isNotEmpty ? result.error : result.output}\n');
+    model.updateTaskStatus(taskIndex, CmdTaskStatus.success);
 
     return result;
   }

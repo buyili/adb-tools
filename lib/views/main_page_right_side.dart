@@ -1,8 +1,6 @@
-
 import 'package:adb_tools/models/output_text_model.dart';
 import 'package:adb_tools/views/output_view.dart';
 import 'package:flutter/material.dart';
-
 
 /// right side widget
 class RightSideWidget extends StatefulWidget {
@@ -26,6 +24,10 @@ class RightSideWidget extends StatefulWidget {
 class _RightSideWidgetState extends State<RightSideWidget> {
   final _textController = TextEditingController();
 
+  void onInputArgs(String args) {
+    widget.onExecute(args);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -43,9 +45,33 @@ class _RightSideWidgetState extends State<RightSideWidget> {
             ),
             controller: _textController,
           ),
-          const Text(
-            'eg: version, devices, devices -l, shell wm size',
+          Row(
+            children: [
+              const Text('eg: '),
+              ClickableText(
+                text: 'version',
+                onTap: onInputArgs,
+              ),
+              const Text(', '),
+              ClickableText(
+                text: 'devices',
+                onTap: onInputArgs,
+              ),
+              const Text(', '),
+              ClickableText(
+                text: 'devices -l',
+                onTap: onInputArgs,
+              ),
+              const Text(', '),
+              ClickableText(
+                text: 'shell wm size',
+                onTap: onInputArgs,
+              ),
+            ],
           ),
+          // const Text(
+          //   'eg: version, devices, devices -l, shell wm size',
+          // ),
           const SizedBox(height: 10.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -81,6 +107,30 @@ class _RightSideWidgetState extends State<RightSideWidget> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class ClickableText extends StatelessWidget {
+  const ClickableText({super.key, required this.text, this.onTap});
+
+  final String text;
+  final Function(String)? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (onTap != null) {
+          onTap!(text);
+        }
+      },
+      child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: Text(
+            text,
+            style: const TextStyle(color: Colors.blue),
+          )),
     );
   }
 }

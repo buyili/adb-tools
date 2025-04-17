@@ -1,5 +1,6 @@
 import 'package:adb_tools/components/copyable_text.dart';
 import 'package:adb_tools/data/models/device.dart';
+import 'package:adb_tools/utils/scrspy_utils.dart';
 import 'package:flutter/material.dart';
 
 class DeviceListTile extends StatelessWidget {
@@ -58,11 +59,8 @@ class DeviceListTile extends StatelessWidget {
       return const Icon(Icons.wifi_off);
     }
 
-    String getTitle() {
-      var deviceName = (device.product != null && device.product!.isNotEmpty)
-          ? '${device.product}-${device.model}'
-          : '';
-      return '${device.serialNumber}       $deviceName';
+    void onStartScrcpy() {
+      ScrcpyUtils.start(device.serialNumber);
     }
 
     return Padding(
@@ -94,7 +92,7 @@ class DeviceListTile extends StatelessWidget {
                 if (!device.wifi) ...[
                   OutlinedButton(
                       onPressed: onOpenTcpipPort,
-                      child: const Text('Open TCP/IP Connection Port')),
+                      child: const Text('Open TCP/IP')),
 
                   const SizedBox(width: 8),
 
@@ -104,6 +102,14 @@ class DeviceListTile extends StatelessWidget {
                     icon: const Icon(Icons.link),
                     color: Theme.of(context).primaryColor,
                   ),
+                ],
+
+                if (device.connected) ...[
+                  // button to disconnect
+                  IconButton.outlined(
+                      onPressed: onStartScrcpy,
+                      icon: const Icon(Icons.display_settings)),
+                  const SizedBox(width: 8),
                 ],
 
                 if (device.wifi) ...[

@@ -17,6 +17,20 @@ class OutputTextModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addTaskOutput(int index, String output) {
+    tasks[index].output += output;
+    notifyListeners();
+  }
+
+  void addTaskOutputLine(int index, String output) {
+    addTaskOutput(index, '$output\n');
+  }
+
+  void updateTaskStatus(int index, String status) {
+    tasks[index].status = status;
+    notifyListeners();
+  }
+
   void clear() {
     tasks.clear();
     notifyListeners();
