@@ -9,8 +9,8 @@ typedef ArgsSerializeCallback = String Function(List<String> args);
 class ADBUtils {
   static final cmdPlus = CmdPlusWrap();
   static const workingDirectory = bool.fromEnvironment('dart.vm.product')
-      ? './data/flutter_assets/assets/adb'
-      : './assets/adb';
+      ? './data/flutter_assets/assets/adb-win'
+      : './assets/adb-win';
 
   static Future<CmdPlusResult> runCmd(
     String cmd,
