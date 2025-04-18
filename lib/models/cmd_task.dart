@@ -10,6 +10,7 @@ class CmdTaskStatus {
   static const String success = "success";
   static const String failure = "failure";
   static const String running = "running";
+  static const String canceled = "canceled";
 
   static Color getColor(String status) {
     switch (status) {
@@ -19,6 +20,8 @@ class CmdTaskStatus {
         return Colors.red;
       case running:
         return Colors.blue;
+      case canceled:
+        return Colors.grey;
       default:
         return Colors.transparent;
     }

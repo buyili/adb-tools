@@ -1,6 +1,8 @@
 import 'package:adb_tools/models/output_text_model.dart';
+import 'package:adb_tools/views/device_list.dart';
 import 'package:adb_tools/views/output_view.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// right side widget
 class RightSideWidget extends StatefulWidget {
@@ -23,9 +25,32 @@ class RightSideWidget extends StatefulWidget {
 
 class _RightSideWidgetState extends State<RightSideWidget> {
   final _textController = TextEditingController();
+  bool turnScreenOff = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrefs();
+  }
+
+  void _loadPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final turnScreenOff = prefs.getBool('turnScreenOff') ?? false;
+    setState(() {
+      this.turnScreenOff = turnScreenOff;
+    });
+  }
 
   void onInputArgs(String args) {
     widget.onExecute(args);
+  }
+
+  Future<void> onTurnScreenOffChanged(bool? value) async {
+    setState(() {
+      turnScreenOff = value!;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('turnScreenOff', value!);
   }
 
   @override
@@ -36,6 +61,18 @@ class _RightSideWidgetState extends State<RightSideWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          const DivideTitle(title: "Scrcpy options:"),
+          Row(
+            children: [
+              CheckboxMenuButton(
+                value: turnScreenOff,
+                onChanged: onTurnScreenOffChanged,
+                child: const Text('Turn Screen Off'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10.0),
+
           TextField(
             keyboardType: TextInputType.multiline,
             maxLines: null,

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:adb_tools/models/cmd_task.dart';
 import 'package:process_run/process_run.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/output_text_model.dart';
 import 'cmd_plus_wrap.dart';
@@ -40,10 +41,13 @@ class ScrcpyUtils {
       model.updateTaskStatus(taskIndex, CmdTaskStatus.success);
     } on ShellException catch (_) {
       // We might get a shell exception
+      model.updateTaskStatus(taskIndex, CmdTaskStatus.failure);
     }
   }
 
   static Future<void> start(String serial) async {
-    await run("$cmd -s $serial");
+    final prefs = await SharedPreferences.getInstance();
+    final turnScreenOff = prefs.getBool('turnScreenOff') ?? false;
+    await run("$cmd -s $serial ${turnScreenOff ? '-S' : ''}");
   }
 }
