@@ -22,33 +22,23 @@ const DeviceSchema = CollectionSchema(
       name: r'device',
       type: IsarType.string,
     ),
-    r'ip': PropertySchema(
-      id: 1,
-      name: r'ip',
-      type: IsarType.string,
-    ),
     r'model': PropertySchema(
-      id: 2,
+      id: 1,
       name: r'model',
       type: IsarType.string,
     ),
-    r'port': PropertySchema(
-      id: 3,
-      name: r'port',
-      type: IsarType.string,
-    ),
     r'product': PropertySchema(
-      id: 4,
+      id: 2,
       name: r'product',
       type: IsarType.string,
     ),
     r'serialNumber': PropertySchema(
-      id: 5,
+      id: 3,
       name: r'serialNumber',
       type: IsarType.string,
     ),
     r'transportId': PropertySchema(
-      id: 6,
+      id: 4,
       name: r'transportId',
       type: IsarType.string,
     )
@@ -80,19 +70,7 @@ int _deviceEstimateSize(
     }
   }
   {
-    final value = object.ip;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
-  {
     final value = object.model;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
-  {
-    final value = object.port;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
     }
@@ -120,12 +98,10 @@ void _deviceSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.device);
-  writer.writeString(offsets[1], object.ip);
-  writer.writeString(offsets[2], object.model);
-  writer.writeString(offsets[3], object.port);
-  writer.writeString(offsets[4], object.product);
-  writer.writeString(offsets[5], object.serialNumber);
-  writer.writeString(offsets[6], object.transportId);
+  writer.writeString(offsets[1], object.model);
+  writer.writeString(offsets[2], object.product);
+  writer.writeString(offsets[3], object.serialNumber);
+  writer.writeString(offsets[4], object.transportId);
 }
 
 Device _deviceDeserialize(
@@ -137,12 +113,10 @@ Device _deviceDeserialize(
   final object = Device();
   object.device = reader.readStringOrNull(offsets[0]);
   object.id = id;
-  object.ip = reader.readStringOrNull(offsets[1]);
-  object.model = reader.readStringOrNull(offsets[2]);
-  object.port = reader.readStringOrNull(offsets[3]);
-  object.product = reader.readStringOrNull(offsets[4]);
-  object.serialNumber = reader.readString(offsets[5]);
-  object.transportId = reader.readStringOrNull(offsets[6]);
+  object.model = reader.readStringOrNull(offsets[1]);
+  object.product = reader.readStringOrNull(offsets[2]);
+  object.serialNumber = reader.readString(offsets[3]);
+  object.transportId = reader.readStringOrNull(offsets[4]);
   return object;
 }
 
@@ -160,12 +134,8 @@ P _deviceDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
-    case 4:
-      return (reader.readStringOrNull(offset)) as P;
-    case 5:
       return (reader.readString(offset)) as P;
-    case 6:
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -458,150 +428,6 @@ extension DeviceQueryFilter on QueryBuilder<Device, Device, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'ip',
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'ip',
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'ip',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'ip',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'ip',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'ip',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'ip',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'ip',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipContains(String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'ip',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipMatches(String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'ip',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'ip',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> ipIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'ip',
-        value: '',
-      ));
-    });
-  }
-
   QueryBuilder<Device, Device, QAfterFilterCondition> modelIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -743,151 +569,6 @@ extension DeviceQueryFilter on QueryBuilder<Device, Device, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'model',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'port',
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'port',
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'port',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'port',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'port',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'port',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'port',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'port',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portContains(String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'port',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'port',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'port',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterFilterCondition> portIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'port',
         value: '',
       ));
     });
@@ -1333,18 +1014,6 @@ extension DeviceQuerySortBy on QueryBuilder<Device, Device, QSortBy> {
     });
   }
 
-  QueryBuilder<Device, Device, QAfterSortBy> sortByIp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'ip', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterSortBy> sortByIpDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'ip', Sort.desc);
-    });
-  }
-
   QueryBuilder<Device, Device, QAfterSortBy> sortByModel() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'model', Sort.asc);
@@ -1354,18 +1023,6 @@ extension DeviceQuerySortBy on QueryBuilder<Device, Device, QSortBy> {
   QueryBuilder<Device, Device, QAfterSortBy> sortByModelDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'model', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterSortBy> sortByPort() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'port', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterSortBy> sortByPortDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'port', Sort.desc);
     });
   }
 
@@ -1431,18 +1088,6 @@ extension DeviceQuerySortThenBy on QueryBuilder<Device, Device, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Device, Device, QAfterSortBy> thenByIp() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'ip', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterSortBy> thenByIpDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'ip', Sort.desc);
-    });
-  }
-
   QueryBuilder<Device, Device, QAfterSortBy> thenByModel() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'model', Sort.asc);
@@ -1452,18 +1097,6 @@ extension DeviceQuerySortThenBy on QueryBuilder<Device, Device, QSortThenBy> {
   QueryBuilder<Device, Device, QAfterSortBy> thenByModelDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'model', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterSortBy> thenByPort() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'port', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Device, Device, QAfterSortBy> thenByPortDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'port', Sort.desc);
     });
   }
 
@@ -1512,24 +1145,10 @@ extension DeviceQueryWhereDistinct on QueryBuilder<Device, Device, QDistinct> {
     });
   }
 
-  QueryBuilder<Device, Device, QDistinct> distinctByIp(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'ip', caseSensitive: caseSensitive);
-    });
-  }
-
   QueryBuilder<Device, Device, QDistinct> distinctByModel(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'model', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<Device, Device, QDistinct> distinctByPort(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'port', caseSensitive: caseSensitive);
     });
   }
 
@@ -1568,21 +1187,9 @@ extension DeviceQueryProperty on QueryBuilder<Device, Device, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Device, String?, QQueryOperations> ipProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'ip');
-    });
-  }
-
   QueryBuilder<Device, String?, QQueryOperations> modelProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'model');
-    });
-  }
-
-  QueryBuilder<Device, String?, QQueryOperations> portProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'port');
     });
   }
 

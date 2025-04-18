@@ -1,6 +1,7 @@
 import 'package:adb_tools/components/my_text_form_field.dart';
 import 'package:adb_tools/data/isar_db.dart';
 import 'package:adb_tools/data/models/device.dart';
+import 'package:adb_tools/models/device_list_model.dart';
 import 'package:adb_tools/models/output_text_model.dart';
 import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:adb_tools/views/apk_drop_target.dart';
@@ -22,76 +23,79 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final Isar _isar = IsarDb.getIns();
-  List<DeviceInfo> devices = [];
-  List<DeviceInfo> connectedDevices = [];
+
   DeviceInfo? selectedDevice;
-  late OutputTextModel model;
+  late OutputTextModel outputTextModel;
   final _scrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
+  late DeviceListModel deviceListModel;
 
   // selected apk files
   final List<XFile> _apkFileList = [];
 
   @override
   void initState() {
-    showConnectedDevices();
+    deviceListModel = context.read<DeviceListModel>();
 
-    model = Provider.of<OutputTextModel>(context, listen: false);
-    model.addListener(() {
+    outputTextModel = Provider.of<OutputTextModel>(context, listen: false);
+    outputTextModel.addListener(() {
       // scroll to top when offset is not 0
       if (_scrollController.offset != 0) {
         _scrollController.jumpTo(_scrollController.position.minScrollExtent);
       }
     });
 
-    Stream<void> deviceIpsChanged = _isar.devices.watchLazy();
-    deviceIpsChanged.listen((_) {
-      setState(() {
-        devices = DeviceInfo.merge(
-            _isar.devices.where().findAllSync(), connectedDevices);
-      });
+    // execute method after current widget build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showConnectedDevices();
     });
     super.initState();
   }
 
   // show connected devices
   Future<void> showConnectedDevices() async {
-    List<DeviceInfo> listOfDevices = await ADBUtils.devices();
+    List<DeviceInfo> tempConnectedDevices = await ADBUtils.devices();
     var dbDevices = _isar.devices.where().findAllSync();
-    var newDevices = DeviceInfo.merge(dbDevices, listOfDevices);
-    setState(() {
-      connectedDevices = listOfDevices;
-      devices = newDevices;
-    });
+    deviceListModel.setConnectedDevices(tempConnectedDevices);
+    deviceListModel.setHistoryDevices(
+        dbDevices.map((device) => DeviceInfo.fromDevice(device)).toList());
 
     if (selectedDevice != null) {
-      var idx = devices.indexWhere(
+      var idx = deviceListModel.allDevices.indexWhere(
           (ele) => ele.serialNumber == selectedDevice?.serialNumber);
       if (idx != -1) {
         setState(() {
-          selectedDevice = devices[idx];
+          selectedDevice = deviceListModel.allDevices[idx];
         });
       }
     }
 
     // Update isar data
-    await _isar.writeTxn(() async {
-      for (var item in dbDevices) {
-        var idx = listOfDevices
-            .indexWhere((ele) => ele.serialNumber == item.serialNumber);
+    _isar.writeTxnSync(() {
+      for (var onlineDevice in tempConnectedDevices) {
+        var idx = dbDevices
+            .indexWhere((ele) => ele.serialNumber == onlineDevice.serialNumber);
         if (idx == -1) {
+          var newDevice = Device()
+            ..serialNumber = onlineDevice.serialNumber
+            ..product = onlineDevice.product
+            ..model = onlineDevice.model
+            ..device = onlineDevice.device
+            ..transportId = onlineDevice.transportId;
+          _isar.devices.putSync(newDevice);
+          deviceListModel.addHistoryDevice(newDevice);
           continue;
         }
-        final dbDevice = await _isar.devices.get(item.id);
+        final dbDevice = _isar.devices.getSync(onlineDevice.id);
         if (dbDevice == null) continue;
-        var target = listOfDevices[idx];
-        await _isar.devices.put(dbDevice
-          ..serialNumber = target.serialNumber
-          ..product = target.product
-          ..model = target.model
-          ..device = target.device
-          ..transportId = target.transportId);
+        dbDevice
+          ..serialNumber = onlineDevice.serialNumber
+          ..product = onlineDevice.product
+          ..model = onlineDevice.model
+          ..device = onlineDevice.device
+          ..transportId = onlineDevice.transportId;
+        _isar.devices.putSync(dbDevice);
       }
     });
   }
@@ -132,22 +136,20 @@ class _MainPageState extends State<MainPage> {
   void onSaveDeviceIPAddressToDB(String ip, String port,
       {bool showExistsSnackBar = true}) async {
     // save ip address and port to isar
+    var serialNumber = '$ip:$port';
     int count = _isar.devices
         .where()
         .filter()
-        .ipEqualTo(ip)
-        .portEqualTo(port)
+        .serialNumberEqualTo(serialNumber)
         .countSync();
-    var serialNumber = '$ip:$port';
     if (count == 0) {
+      var newDevice = Device()..serialNumber = serialNumber;
       _isar.writeTxnSync(() {
         _isar.devices.putSync(
-          Device()
-            ..ip = ip
-            ..port = port
-            ..serialNumber = serialNumber,
+          newDevice,
         );
       });
+      deviceListModel.addHistoryDevice(newDevice);
     } else {
       if (showExistsSnackBar) {
         scaffoldMessengerKey.currentState?.showSnackBar(
@@ -158,8 +160,15 @@ class _MainPageState extends State<MainPage> {
   }
 
   void onSelect(DeviceInfo device) {
+    if (selectedDevice == null) {
+      setState(() {
+        selectedDevice = device;
+      });
+      return;
+    }
     setState(() {
-      selectedDevice = selectedDevice == device ? null : device;
+      selectedDevice =
+          selectedDevice?.serialNumber == device.serialNumber ? null : device;
     });
   }
 
@@ -214,7 +223,7 @@ class _MainPageState extends State<MainPage> {
   // disconnect device on TCP/IP
   void onDisconnect(DeviceInfo device) async {
     var success = await ADBUtils.disconnect(device.serialNumber);
-    if (success && device == selectedDevice){
+    if (success && device == selectedDevice) {
       setState(() {
         selectedDevice = null;
       });
@@ -232,6 +241,7 @@ class _MainPageState extends State<MainPage> {
         _isar.writeTxnSync(() {
           _isar.devices.deleteSync(device.id);
         });
+        deviceListModel.removeHistoryDeviceById(device.id);
       },
     );
   }
@@ -278,7 +288,6 @@ class _MainPageState extends State<MainPage> {
 
                     // device list
                     DeviceList(
-                      devices: devices,
                       selectedDevice: selectedDevice,
                       onSelect: onSelect,
                       onOpenTcpipPort: onOpenTcpipPort,
@@ -302,7 +311,7 @@ class _MainPageState extends State<MainPage> {
 
               // right side
               RightSideWidget(
-                model: model,
+                model: outputTextModel,
                 scrollController: _scrollController,
                 onShowDevices: showConnectedDevices,
                 onExecute: onExecuteEnterCommand,

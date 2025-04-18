@@ -1,10 +1,11 @@
 import 'package:adb_tools/data/models/device.dart';
+import 'package:adb_tools/models/device_list_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'device_list_tile.dart';
 
 class DeviceList extends StatelessWidget {
-  final List<DeviceInfo> devices;
   final DeviceInfo? selectedDevice;
   final Function(DeviceInfo) onOpenTcpipPort;
   final Function(DeviceInfo) onSelect;
@@ -15,7 +16,6 @@ class DeviceList extends StatelessWidget {
 
   const DeviceList({
     super.key,
-    required this.devices,
     required this.selectedDevice,
     required this.onOpenTcpipPort,
     required this.onSelect,
@@ -27,35 +27,40 @@ class DeviceList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<DeviceInfo> devices = context.watch<DeviceListModel>().allDevices;
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 24.0),
         child: ListView.builder(
           itemCount: devices.length,
           itemBuilder: (context, index) {
-            if(devices[index].isTitle){
-              return const DivideTitle();
+            var deviceItem = devices[index];
+            if (deviceItem.isTitle) {
+              return DivideTitle(
+                title: deviceItem.name!,
+              );
             }
             return DeviceListTile(
-              device: devices[index],
-              isSelected: selectedDevice == devices[index],
+              device: deviceItem,
+              isSelected: selectedDevice != null &&
+                  selectedDevice!.serialNumber == deviceItem.serialNumber,
               onTap: () {
-                onSelect(devices[index]);
+                onSelect(deviceItem);
               },
-              onOpenTcpipPort: (){
-                onOpenTcpipPort(devices[index]);
+              onOpenTcpipPort: () {
+                onOpenTcpipPort(deviceItem);
               },
               onConnect: () {
-                onConnect(devices[index]);
+                onConnect(deviceItem);
               },
               onDisconnect: () {
-                onDisconnect(devices[index]);
+                onDisconnect(deviceItem);
               },
               onDelete: () {
-                onDelete(devices[index]);
+                onDelete(deviceItem);
               },
               onGetIpAndConnect: () {
-                onGetIpAndConnect(devices[index]);
+                onGetIpAndConnect(deviceItem);
               },
             );
           },
@@ -66,14 +71,15 @@ class DeviceList extends StatelessWidget {
 }
 
 class DivideTitle extends StatelessWidget {
-  const DivideTitle({super.key});
+  const DivideTitle({super.key, required this.title});
+
+  final String title;
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.only(top: 18, right: 8, bottom: 0),
-      child: Text('Previously connected devices'),
+    return Padding(
+      padding: const EdgeInsets.only(top: 18, right: 8, bottom: 0),
+      child: Text(title),
     );
   }
 }
-
