@@ -15,4 +15,4 @@ A simple GUI for ADB.
 
 ### Output Screen
 
-![img.png](img.png)
+![img.png](.README_images/img.png)
