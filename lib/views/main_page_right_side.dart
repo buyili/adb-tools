@@ -1,4 +1,4 @@
-import 'package:adb_tools/models/output_text_model.dart';
+import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:adb_tools/views/device_list.dart';
 import 'package:adb_tools/views/output_view.dart';
 import 'package:flutter/material.dart';

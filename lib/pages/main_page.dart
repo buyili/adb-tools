@@ -1,8 +1,8 @@
 import 'package:adb_tools/components/my_text_form_field.dart';
 import 'package:adb_tools/data/isar_db.dart';
 import 'package:adb_tools/data/models/device.dart';
-import 'package:adb_tools/models/device_list_model.dart';
-import 'package:adb_tools/models/output_text_model.dart';
+import 'package:adb_tools/providers/device_list_model.dart';
+import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:adb_tools/views/apk_drop_target.dart';
 import 'package:adb_tools/views/device_list.dart';

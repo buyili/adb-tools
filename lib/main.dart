@@ -1,6 +1,6 @@
 import 'package:adb_tools/data/isar_db.dart';
-import 'package:adb_tools/models/device_list_model.dart';
-import 'package:adb_tools/models/output_text_model.dart';
+import 'package:adb_tools/providers/device_list_model.dart';
+import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';

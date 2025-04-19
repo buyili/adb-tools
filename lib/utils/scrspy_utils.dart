@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:adb_tools/models/cmd_task.dart';
+import 'package:adb_tools/providers/cmd_task.dart';
 import 'package:process_run/process_run.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/output_text_model.dart';
+import '../providers/output_text_model.dart';
 import 'cmd_plus_wrap.dart';
 
 class ScrcpyUtils {

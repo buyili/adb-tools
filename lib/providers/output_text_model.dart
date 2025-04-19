@@ -1,4 +1,4 @@
-import 'package:adb_tools/models/cmd_task.dart';
+import 'package:adb_tools/providers/cmd_task.dart';
 import 'package:flutter/material.dart';
 
 class OutputTextModel extends ChangeNotifier {

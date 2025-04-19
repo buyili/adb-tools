@@ -1,5 +1,5 @@
 import 'package:adb_tools/data/models/device.dart';
-import 'package:adb_tools/models/device_list_model.dart';
+import 'package:adb_tools/providers/device_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
