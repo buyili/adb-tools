@@ -1,4 +1,3 @@
-import 'package:adb_tools/main.dart';
 import 'package:adb_tools/providers/cmd_task.dart';
 import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:flutter/material.dart';
@@ -52,14 +51,15 @@ class _OutputViewState extends ConsumerState<OutputView> {
                 children: [
                   Row(
                     children: [
-                      SelectableText(
-                        task.cmd,
-                        style: const TextStyle(
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: SelectableText(
+                          task.cmd,
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      const Spacer(),
                       Text(
                         task.status,
                         style: TextStyle(

@@ -1,9 +1,12 @@
+import 'package:adb_tools/providers/config_provider.dart';
 import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:adb_tools/views/device_list.dart';
 import 'package:adb_tools/views/output_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import '../components/my_checkbox.dart';
+import '../db/db.dart';
 
 /// right side widget
 class RightSideWidget extends ConsumerStatefulWidget {
@@ -31,23 +34,42 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
   }
 
   void _loadPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final turnScreenOff = prefs.getBool('turnScreenOff') ?? false;
-    setState(() {
-      this.turnScreenOff = turnScreenOff;
-    });
+    final savedMainConfig = await Db.getMainConfig();
+    ref.read(configScreenConfig.notifier).setConfig(savedMainConfig);
   }
 
   void onInputArgs(String args) {
     widget.onExecute(args);
   }
 
-  Future<void> onTurnScreenOffChanged(bool? value) async {
-    setState(() {
-      turnScreenOff = value!;
-    });
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setBool('turnScreenOff', value!);
+  Future<void> _toggleTurnOffDisplay(bool? value) async {
+    final config = ref.read(configScreenConfig)!;
+    final turnOffDisplay = config.deviceOptions.turnOffDisplay;
+
+    ref
+        .read(configScreenConfig.notifier)
+        .setDeviceConfig(turnOffDisplay: !turnOffDisplay);
+    Db.saveMainConfig(ref.read(configScreenConfig)!);
+  }
+
+  Future<void> _toggleShowTouches(bool? value) async {
+    final config = ref.read(configScreenConfig)!;
+    final showTouches = config.deviceOptions.showTouches;
+
+    ref
+        .read(configScreenConfig.notifier)
+        .setDeviceConfig(showTouches: !showTouches);
+    Db.saveMainConfig(ref.read(configScreenConfig)!);
+  }
+
+  Future<void> _toggleStayAwake(bool? value) async {
+    final config = ref.read(configScreenConfig)!;
+    final stayAwake = config.deviceOptions.stayAwake;
+
+    ref
+        .read(configScreenConfig.notifier)
+        .setDeviceConfig(stayAwake: !stayAwake);
+    Db.saveMainConfig(ref.read(configScreenConfig)!);
   }
 
   void onClear() {
@@ -56,6 +78,8 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final mainConfig = ref.watch(configScreenConfig);
+
     return SizedBox(
       width: 400,
       // padding: const EdgeInsets.all(12.0),
@@ -63,12 +87,24 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const DivideTitle(title: "Scrcpy options:"),
-          Row(
+          Wrap(
+            direction: Axis.horizontal,
+            spacing: 12.0,
             children: [
-              CheckboxMenuButton(
-                value: turnScreenOff,
-                onChanged: onTurnScreenOffChanged,
+              MyCheckbox(
+                value: mainConfig?.deviceOptions.turnOffDisplay ?? false,
+                onChanged: _toggleTurnOffDisplay,
                 child: const Text('Turn Screen Off'),
+              ),
+              MyCheckbox(
+                value: mainConfig?.deviceOptions.showTouches ?? false,
+                onChanged: _toggleShowTouches,
+                child: const Text('Show Touches'),
+              ),
+              MyCheckbox(
+                value: mainConfig?.deviceOptions.stayAwake ?? false,
+                onChanged: _toggleStayAwake,
+                child: const Text('Stay Awake'),
               ),
             ],
           ),

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:adb_tools/models/scrcpy_related/scrcpy_config.dart';
 import 'package:adb_tools/providers/cmd_task.dart';
 import 'package:process_run/process_run.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../providers/output_text_model.dart';
 import 'cmd_plus_wrap.dart';
@@ -45,9 +45,10 @@ class ScrcpyUtils {
     }
   }
 
-  static Future<void> start(String serial) async {
-    final prefs = await SharedPreferences.getInstance();
-    final turnScreenOff = prefs.getBool('turnScreenOff') ?? false;
-    await run("$cmd -s $serial ${turnScreenOff ? '-S' : ''}");
+  static Future<void> start(String serial, ScrcpyConfig config) async {
+    final turnScreenOff = config.deviceOptions.turnOffDisplay;
+    final showTouches = config.deviceOptions.showTouches;
+    final stayAwake = config.deviceOptions.stayAwake;
+    await run("$cmd -s $serial ${turnScreenOff ? '-S' : ''} ${showTouches ? '--show-touches' : ''} ${stayAwake ? '--stay-awake' : ''}");
   }
 }

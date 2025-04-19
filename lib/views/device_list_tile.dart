@@ -1,9 +1,12 @@
 import 'package:adb_tools/components/copyable_text.dart';
 import 'package:adb_tools/data/models/device.dart';
+import 'package:adb_tools/models/scrcpy_related/scrcpy_config.dart';
+import 'package:adb_tools/providers/config_provider.dart';
 import 'package:adb_tools/utils/scrspy_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DeviceListTile extends StatelessWidget {
+class DeviceListTile extends ConsumerWidget {
   final DeviceInfo device;
   final Function()? onTap;
   final Function()? onOpenTcpipPort;
@@ -26,7 +29,7 @@ class DeviceListTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     var normalBoxDecoration = BoxDecoration(
       border: Border.all(color: Colors.grey, width: 1),
       borderRadius: const BorderRadius.all(Radius.circular(8.0)),
@@ -60,7 +63,8 @@ class DeviceListTile extends StatelessWidget {
     }
 
     void onStartScrcpy() {
-      ScrcpyUtils.start(device.serialNumber);
+      final ScrcpyConfig config = ref.read(configScreenConfig)!;
+      ScrcpyUtils.start(device.serialNumber, config);
     }
 
     return Padding(
