@@ -1,5 +1,6 @@
 import 'package:adb_tools/providers/cmd_task.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OutputTextModel extends ChangeNotifier {
   List<CmdTask> tasks = [];
@@ -48,3 +49,7 @@ class OutputTextModelFactory {
     return model!;
   }
 }
+
+final outputTextProvider = ChangeNotifierProvider<OutputTextModel>((ref){
+  return OutputTextModelFactory.getIns();
+});

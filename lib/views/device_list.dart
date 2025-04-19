@@ -1,11 +1,11 @@
 import 'package:adb_tools/data/models/device.dart';
 import 'package:adb_tools/providers/device_list_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'device_list_tile.dart';
 
-class DeviceList extends StatelessWidget {
+class DeviceList extends ConsumerWidget {
   final DeviceInfo? selectedDevice;
   final Function(DeviceInfo) onOpenTcpipPort;
   final Function(DeviceInfo) onSelect;
@@ -26,8 +26,8 @@ class DeviceList extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    List<DeviceInfo> devices = context.watch<DeviceListModel>().allDevices;
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<DeviceInfo> devices = ref.watch(deviceListProvider).allDevices;
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 24.0),

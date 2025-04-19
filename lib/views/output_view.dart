@@ -1,27 +1,28 @@
+import 'package:adb_tools/main.dart';
 import 'package:adb_tools/providers/cmd_task.dart';
 import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 TextStyle _textStyle = const TextStyle(fontSize: 12.0);
 
 // log output view
-class OutputView extends StatefulWidget {
+class OutputView extends ConsumerStatefulWidget {
   const OutputView({
     super.key,
   });
 
   @override
-  State<OutputView> createState() => _OutputViewState();
+  ConsumerState<OutputView> createState() => _OutputViewState();
 }
 
-class _OutputViewState extends State<OutputView> {
+class _OutputViewState extends ConsumerState<OutputView> {
   final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    context.read<OutputTextModel>().addListener(() {
+    ref.read(outputTextProvider).addListener(() {
       // scroll to top when offset is not 0
       if (_scrollController.offset != 0) {
         _scrollController.jumpTo(_scrollController.position.minScrollExtent);
@@ -36,8 +37,9 @@ class _OutputViewState extends State<OutputView> {
         border: Border.all(color: Colors.grey, width: 1.0),
         borderRadius: const BorderRadius.all(Radius.circular(10.0)),
       ),
-      child: Consumer<OutputTextModel>(
-        builder: (context, model, child) {
+      child: Consumer(
+        builder: (context, ref, child) {
+          OutputTextModel model = ref.watch(outputTextProvider);
           return ListView.builder(
             itemCount: model.tasks.length,
             padding: const EdgeInsets.symmetric(horizontal: 12.0),

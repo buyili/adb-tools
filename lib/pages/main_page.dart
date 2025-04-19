@@ -9,23 +9,25 @@ import 'package:adb_tools/views/device_list.dart';
 import 'package:adb_tools/views/main_page_right_side.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:provider/provider.dart';
 
+import '../main.dart';
+
 const String defaultPort = '5555';
 
-class MainPage extends StatefulWidget {
+class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  ConsumerState<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends ConsumerState<MainPage> {
   final Isar _isar = IsarDb.getIns();
 
   DeviceInfo? selectedDevice;
-  late OutputTextModel outputTextModel;
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
   late DeviceListModel deviceListModel;
@@ -35,7 +37,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    deviceListModel = context.read<DeviceListModel>();
+    deviceListModel = ref.read(deviceListProvider);
 
     // execute method after current widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {

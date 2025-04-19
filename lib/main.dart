@@ -1,11 +1,10 @@
 import 'package:adb_tools/data/isar_db.dart';
-import 'package:adb_tools/providers/device_list_model.dart';
-import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'pages/main_page.dart';
+
 
 Future<void> main() async {
   // Try to resize and reposition the window to be half the width and height
@@ -29,7 +28,7 @@ Future<void> main() async {
   // Initialize the Isar database
   await IsarDb.initInstance();
 
-  runApp(const MainApp());
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 class MainApp extends StatelessWidget {
@@ -43,18 +42,7 @@ class MainApp extends StatelessWidget {
         colorSchemeSeed: Colors.green,
         useMaterial3: true,
       ),
-      home: MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (context) => DeviceListModel(),
-          ),
-          ChangeNotifierProvider(
-            // Must use OutputTextModelFactory initial instance.
-            create: (context) => OutputTextModelFactory.getIns(),
-          ),
-        ],
-        child: const MainPage(),
-      ),
+      home: const MainPage(),
     );
   }
 }

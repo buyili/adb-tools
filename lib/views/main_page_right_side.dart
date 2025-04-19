@@ -2,11 +2,11 @@ import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:adb_tools/views/device_list.dart';
 import 'package:adb_tools/views/output_view.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// right side widget
-class RightSideWidget extends StatefulWidget {
+class RightSideWidget extends ConsumerStatefulWidget {
   final Function onShowDevices;
   final Function onExecute;
 
@@ -17,10 +17,10 @@ class RightSideWidget extends StatefulWidget {
   });
 
   @override
-  State<RightSideWidget> createState() => _RightSideWidgetState();
+  ConsumerState<RightSideWidget> createState() => _RightSideWidgetState();
 }
 
-class _RightSideWidgetState extends State<RightSideWidget> {
+class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
   final _textController = TextEditingController();
   bool turnScreenOff = false;
 
@@ -51,7 +51,7 @@ class _RightSideWidgetState extends State<RightSideWidget> {
   }
 
   void onClear() {
-    context.read<OutputTextModel>().clear();
+    ref.read(outputTextProvider).clear();
   }
 
   @override
