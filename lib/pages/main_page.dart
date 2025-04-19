@@ -26,7 +26,6 @@ class _MainPageState extends State<MainPage> {
 
   DeviceInfo? selectedDevice;
   late OutputTextModel outputTextModel;
-  final _scrollController = ScrollController();
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
   late DeviceListModel deviceListModel;
@@ -37,14 +36,6 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     deviceListModel = context.read<DeviceListModel>();
-
-    outputTextModel = Provider.of<OutputTextModel>(context, listen: false);
-    outputTextModel.addListener(() {
-      // scroll to top when offset is not 0
-      if (_scrollController.offset != 0) {
-        _scrollController.jumpTo(_scrollController.position.minScrollExtent);
-      }
-    });
 
     // execute method after current widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -311,8 +302,6 @@ class _MainPageState extends State<MainPage> {
 
               // right side
               RightSideWidget(
-                model: outputTextModel,
-                scrollController: _scrollController,
                 onShowDevices: showConnectedDevices,
                 onExecute: onExecuteEnterCommand,
               ),

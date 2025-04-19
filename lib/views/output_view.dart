@@ -6,13 +6,28 @@ import 'package:provider/provider.dart';
 TextStyle _textStyle = const TextStyle(fontSize: 12.0);
 
 // log output view
-class OutputView extends StatelessWidget {
+class OutputView extends StatefulWidget {
   const OutputView({
     super.key,
-    required ScrollController scrollController,
-  }) : _scrollController = scrollController;
+  });
 
-  final ScrollController _scrollController;
+  @override
+  State<OutputView> createState() => _OutputViewState();
+}
+
+class _OutputViewState extends State<OutputView> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<OutputTextModel>().addListener(() {
+      // scroll to top when offset is not 0
+      if (_scrollController.offset != 0) {
+        _scrollController.jumpTo(_scrollController.position.minScrollExtent);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

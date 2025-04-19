@@ -2,22 +2,19 @@ import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:adb_tools/views/device_list.dart';
 import 'package:adb_tools/views/output_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// right side widget
 class RightSideWidget extends StatefulWidget {
-  final OutputTextModel model;
-  final ScrollController _scrollController;
   final Function onShowDevices;
   final Function onExecute;
 
   const RightSideWidget({
     super.key,
-    required this.model,
-    required ScrollController scrollController,
     required this.onShowDevices,
     required this.onExecute,
-  }) : _scrollController = scrollController;
+  });
 
   @override
   State<RightSideWidget> createState() => _RightSideWidgetState();
@@ -51,6 +48,10 @@ class _RightSideWidgetState extends State<RightSideWidget> {
     });
     final prefs = await SharedPreferences.getInstance();
     prefs.setBool('turnScreenOff', value!);
+  }
+
+  void onClear() {
+    context.read<OutputTextModel>().clear();
   }
 
   @override
@@ -131,16 +132,14 @@ class _RightSideWidgetState extends State<RightSideWidget> {
                 ],
               ),
               ElevatedButton(
-                onPressed: () {
-                  widget.model.clear();
-                },
+                onPressed: onClear,
                 child: const Text('Clear'),
               ),
             ],
           ),
           const SizedBox(height: 10.0),
-          Expanded(
-            child: OutputView(scrollController: widget._scrollController),
+          const Expanded(
+            child: OutputView(),
           ),
         ],
       ),
