@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:adb_tools/components/my_text_form_field.dart';
 import 'package:adb_tools/data/isar_db.dart';
 import 'package:adb_tools/data/models/device.dart';
@@ -38,6 +40,10 @@ class _MainPageState extends ConsumerState<MainPage> {
     // execute method after current widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showConnectedDevices();
+
+      Timer.periodic(const Duration(seconds: 10), (timer) {
+        showConnectedDevices();
+      });
     });
     super.initState();
   }
