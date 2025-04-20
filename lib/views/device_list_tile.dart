@@ -106,6 +106,8 @@ class DeviceListTile extends ConsumerWidget {
                     icon: const Icon(Icons.link),
                     color: Theme.of(context).primaryColor,
                   ),
+
+                  const SizedBox(width: 8),
                 ],
 
                 if (device.connected) ...[
