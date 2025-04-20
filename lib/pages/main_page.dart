@@ -71,7 +71,8 @@ class _MainPageState extends ConsumerState<MainPage> {
       for (var onlineDevice in tempConnectedDevices) {
         var idx = dbDevices
             .indexWhere((ele) => ele.serialNumber == onlineDevice.serialNumber);
-        if (idx == -1) {
+
+        if (idx == -1 && onlineDevice.wifi) {
           var newDevice = Device()
             ..serialNumber = onlineDevice.serialNumber
             ..product = onlineDevice.product
@@ -82,6 +83,7 @@ class _MainPageState extends ConsumerState<MainPage> {
           deviceListModel.addHistoryDevice(newDevice);
           continue;
         }
+
         final dbDevice = _isar.devices.getSync(onlineDevice.id);
         if (dbDevice == null) continue;
         dbDevice
