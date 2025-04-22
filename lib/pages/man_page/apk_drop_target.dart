@@ -3,7 +3,7 @@ import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 
-import '../data/models/device.dart';
+import '../../data/models/device.dart';
 
 class ApkDragTarget extends StatefulWidget {
   final List<XFile> list;

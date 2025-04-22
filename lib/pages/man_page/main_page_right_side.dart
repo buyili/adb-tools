@@ -1,12 +1,12 @@
+import 'package:adb_tools/pages/man_page/output_view.dart';
 import 'package:adb_tools/providers/config_provider.dart';
 import 'package:adb_tools/providers/output_text_model.dart';
-import 'package:adb_tools/views/device_list.dart';
-import 'package:adb_tools/views/output_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../components/my_checkbox.dart';
-import '../db/db.dart';
+import '../../components/divide_title.dart';
+import '../../components/my_checkbox.dart';
+import '../../db/db.dart';
 
 /// right side widget
 class RightSideWidget extends ConsumerStatefulWidget {

@@ -3,6 +3,7 @@ import 'package:adb_tools/providers/device_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../components/divide_title.dart';
 import 'device_list_tile.dart';
 
 class DeviceList extends ConsumerWidget {
@@ -66,20 +67,6 @@ class DeviceList extends ConsumerWidget {
           },
         ),
       ),
-    );
-  }
-}
-
-class DivideTitle extends StatelessWidget {
-  const DivideTitle({super.key, required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 18, right: 8, bottom: 0),
-      child: Text(title),
     );
   }
 }
