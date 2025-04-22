@@ -80,105 +80,101 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
   Widget build(BuildContext context) {
     final mainConfig = ref.watch(configScreenConfig);
 
-    return SizedBox(
-      width: 400,
-      // padding: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const DivideTitle(title: "Scrcpy options:"),
-          Wrap(
-            direction: Axis.horizontal,
-            spacing: 12.0,
-            children: [
-              MyCheckbox(
-                value: mainConfig?.deviceOptions.turnOffDisplay ?? false,
-                onChanged: _toggleTurnOffDisplay,
-                child: const Text('Turn Screen Off'),
-              ),
-              MyCheckbox(
-                value: mainConfig?.deviceOptions.showTouches ?? false,
-                onChanged: _toggleShowTouches,
-                child: const Text('Show Touches'),
-              ),
-              MyCheckbox(
-                value: mainConfig?.deviceOptions.stayAwake ?? false,
-                onChanged: _toggleStayAwake,
-                child: const Text('Stay Awake'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10.0),
-
-          TextField(
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Enter Command',
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const DivideTitle(title: "Scrcpy options:"),
+        Wrap(
+          direction: Axis.horizontal,
+          spacing: 12.0,
+          children: [
+            MyCheckbox(
+              value: mainConfig?.deviceOptions.turnOffDisplay ?? false,
+              onChanged: _toggleTurnOffDisplay,
+              child: const Text('Turn Screen Off'),
             ),
-            controller: _textController,
+            MyCheckbox(
+              value: mainConfig?.deviceOptions.showTouches ?? false,
+              onChanged: _toggleShowTouches,
+              child: const Text('Show Touches'),
+            ),
+            MyCheckbox(
+              value: mainConfig?.deviceOptions.stayAwake ?? false,
+              onChanged: _toggleStayAwake,
+              child: const Text('Stay Awake'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10.0),
+
+        TextField(
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'Enter Command',
           ),
-          Row(
-            children: [
-              const Text('eg: '),
-              ClickableText(
-                text: 'version',
-                onTap: onInputArgs,
-              ),
-              const Text(', '),
-              ClickableText(
-                text: 'devices',
-                onTap: onInputArgs,
-              ),
-              const Text(', '),
-              ClickableText(
-                text: 'devices -l',
-                onTap: onInputArgs,
-              ),
-              const Text(', '),
-              ClickableText(
-                text: 'shell wm size',
-                onTap: onInputArgs,
-              ),
-            ],
-          ),
-          // const Text(
-          //   'eg: version, devices, devices -l, shell wm size',
-          // ),
-          const SizedBox(height: 10.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      widget.onShowDevices();
-                    },
-                    child: const Text('Show Devices'),
-                  ),
-                  const SizedBox(width: 10.0),
-                  ElevatedButton(
-                    onPressed: () {
-                      widget.onExecute(_textController.text);
-                    },
-                    child: const Text('Execute'),
-                  ),
-                ],
-              ),
-              ElevatedButton(
-                onPressed: onClear,
-                child: const Text('Clear'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10.0),
-          const Expanded(
-            child: OutputView(),
-          ),
-        ],
-      ),
+          controller: _textController,
+        ),
+        Row(
+          children: [
+            const Text('eg: '),
+            ClickableText(
+              text: 'version',
+              onTap: onInputArgs,
+            ),
+            const Text(', '),
+            ClickableText(
+              text: 'devices',
+              onTap: onInputArgs,
+            ),
+            const Text(', '),
+            ClickableText(
+              text: 'devices -l',
+              onTap: onInputArgs,
+            ),
+            const Text(', '),
+            ClickableText(
+              text: 'shell wm size',
+              onTap: onInputArgs,
+            ),
+          ],
+        ),
+        // const Text(
+        //   'eg: version, devices, devices -l, shell wm size',
+        // ),
+        const SizedBox(height: 10.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    widget.onShowDevices();
+                  },
+                  child: const Text('Show Devices'),
+                ),
+                const SizedBox(width: 10.0),
+                ElevatedButton(
+                  onPressed: () {
+                    widget.onExecute(_textController.text);
+                  },
+                  child: const Text('Execute'),
+                ),
+              ],
+            ),
+            ElevatedButton(
+              onPressed: onClear,
+              child: const Text('Clear'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10.0),
+        const Expanded(
+          child: OutputView(),
+        ),
+      ],
     );
   }
 }

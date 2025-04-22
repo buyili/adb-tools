@@ -231,7 +231,8 @@ class _MainPageState extends ConsumerState<MainPage> {
           padding: const EdgeInsets.all(12.0),
           child: Row(
             children: [
-              Expanded(
+              Flexible(
+                flex: 8,
                 child: Column(
                   children: [
                     // text input
@@ -255,9 +256,12 @@ class _MainPageState extends ConsumerState<MainPage> {
               ),
 
               // right side
-              RightSideWidget(
-                onShowDevices: showConnectedDevices,
-                onExecute: onExecuteEnterCommand,
+              Flexible(
+                flex: 5,
+                child: RightSideWidget(
+                  onShowDevices: showConnectedDevices,
+                  onExecute: onExecuteEnterCommand,
+                ),
               ),
             ],
           ),
