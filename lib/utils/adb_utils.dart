@@ -1,4 +1,4 @@
-import 'package:adb_tools/data/models/device.dart';
+import 'package:adb_tools/models/device.dart';
 import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:adb_tools/utils/cmd_plus_wrap.dart';
 import 'package:cmd_plus/cmd_plus.dart';

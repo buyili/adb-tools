@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../data/models/device.dart';
+import '../models/device.dart';
 
 class DeviceListModel extends ChangeNotifier {
   List<DeviceInfo> historyDevices = [];

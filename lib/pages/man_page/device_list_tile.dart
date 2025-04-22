@@ -1,5 +1,5 @@
 import 'package:adb_tools/components/copyable_text.dart';
-import 'package:adb_tools/data/models/device.dart';
+import 'package:adb_tools/models/device.dart';
 import 'package:adb_tools/models/scrcpy_related/scrcpy_config.dart';
 import 'package:adb_tools/providers/config_provider.dart';
 import 'package:adb_tools/utils/scrspy_utils.dart';

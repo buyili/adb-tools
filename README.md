@@ -10,8 +10,7 @@ A simple GUI for ADB.
 ## Screenshot
 
 ### Main Window
-![img_1.png](.README_images/img_1.png)
-
+![img.png](.README_images/img_1.png)
 
 ### Output Screen
 

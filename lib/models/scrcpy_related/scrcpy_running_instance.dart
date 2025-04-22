@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:adb_tools/data/models/device.dart';
+import 'package:adb_tools/models/device.dart';
 import 'package:adb_tools/models/scrcpy_related/scrcpy_config.dart';
 
 class ScrcpyRunningInstance {

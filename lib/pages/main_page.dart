@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:adb_tools/components/my_text_form_field.dart';
-import 'package:adb_tools/data/models/device.dart';
+import 'package:adb_tools/models/device.dart';
 import 'package:adb_tools/db/db.dart';
 import 'package:adb_tools/pages/man_page/apk_drop_target.dart';
 import 'package:adb_tools/pages/man_page/device_list.dart';

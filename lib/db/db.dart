@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/models/device.dart';
+import '../models/device.dart';
 import '../models/scrcpy_related/scrcpy_config.dart';
 import '../providers/config_provider.dart';
 import '../utils/const.dart';

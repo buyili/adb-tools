@@ -1,4 +1,4 @@
-import 'package:adb_tools/data/models/device.dart';
+import 'package:adb_tools/models/device.dart';
 import 'package:adb_tools/providers/device_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
