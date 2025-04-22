@@ -18,6 +18,7 @@ class ADBUtils {
     String cmd,
     List<String> args, {
     ArgsSerializeCallback? argsSerialize,
+    bool printOutput = true,
   }) async {
     // get OutputTextModel instance.
     OutputTextModel model = OutputTextModelFactory.getIns();
@@ -25,7 +26,10 @@ class ADBUtils {
     // serialize args
     String argsText =
         argsSerialize != null ? argsSerialize(args) : args.join(" ");
-    int taskIndex = model.addTask('$cmd $argsText');
+    late int taskIndex;
+    if (printOutput) {
+      taskIndex = model.addTask('$cmd $argsText');
+    }
 
     final result = await cmdPlus.run(
       cmd,
@@ -38,18 +42,22 @@ class ADBUtils {
       workingDirectory: workingDirectory,
     );
 
-    model.updateTask(taskIndex,
-        '${result.error.isNotEmpty ? result.error : result.output}\n');
-    model.updateTaskStatus(taskIndex, CmdTaskStatus.success);
+    if (printOutput) {
+      model.updateTask(taskIndex,
+          '${result.error.isNotEmpty ? result.error : result.output}\n');
+      model.updateTaskStatus(taskIndex, CmdTaskStatus.success);
+    }
 
     return result;
   }
 
-  static Future<List<DeviceInfo>> devices() async {
+  static Future<List<DeviceInfo>> devices({
+    bool printOutput = true,
+}) async {
     /// Run any commands
     var cmd = 'adb devices -l';
 
-    final result = await runCmd(cmd, []);
+    final result = await runCmd(cmd, [], printOutput: printOutput);
 
     List<DeviceInfo> devices = [];
     if (result.error.isEmpty) {
@@ -199,7 +207,8 @@ class ADBUtils {
   }
 
   static void startShizuku(String serialNumber) {
-    var cmd = 'adb -s $serialNumber shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh';
+    var cmd =
+        'adb -s $serialNumber shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh';
     runCmd(cmd, []);
   }
 }

@@ -37,15 +37,17 @@ class _MainPageState extends ConsumerState<MainPage> {
       showConnectedDevices();
 
       Timer.periodic(const Duration(seconds: 10), (timer) {
-        showConnectedDevices();
+        showConnectedDevices(printOutput: false);
       });
     });
     super.initState();
   }
 
   // show connected devices
-  Future<void> showConnectedDevices() async {
-    List<DeviceInfo> tempConnectedDevices = await ADBUtils.devices();
+  Future<void> showConnectedDevices({
+    bool printOutput = true,
+}) async {
+    List<DeviceInfo> tempConnectedDevices = await ADBUtils.devices(printOutput: printOutput);
     var dbDevices = _isar.devices.where().findAllSync();
     deviceListModel.setConnectedDevices(tempConnectedDevices);
     deviceListModel.setHistoryDevices(
