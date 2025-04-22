@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../components/divide_title.dart';
+import '../../utils/adb_utils.dart';
 import 'device_list_tile.dart';
 
 class DeviceList extends ConsumerWidget {
-  final DeviceInfo? selectedDevice;
-  final Function(DeviceInfo) onOpenTcpipPort;
   final Function(DeviceInfo) onSelect;
   final Function(DeviceInfo) onConnect;
   final Function(DeviceInfo) onDisconnect;
@@ -17,8 +16,6 @@ class DeviceList extends ConsumerWidget {
 
   const DeviceList({
     super.key,
-    required this.selectedDevice,
-    required this.onOpenTcpipPort,
     required this.onSelect,
     required this.onConnect,
     required this.onDisconnect,
@@ -26,9 +23,16 @@ class DeviceList extends ConsumerWidget {
     required this.onGetIpAndConnect,
   });
 
+  // open port for use adb over Wi-Fi
+  void onOpenTcpipPort(DeviceInfo device) async {
+    await ADBUtils.openTcpipPort(device.serialNumber);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     List<DeviceInfo> devices = ref.watch(deviceListProvider).allDevices;
+    DeviceInfo? selectedDevice = ref.watch(selectedDeviceProvider);
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 24.0),
@@ -44,7 +48,7 @@ class DeviceList extends ConsumerWidget {
             return DeviceListTile(
               device: deviceItem,
               isSelected: selectedDevice != null &&
-                  selectedDevice!.serialNumber == deviceItem.serialNumber,
+                  selectedDevice.serialNumber == deviceItem.serialNumber,
               onTap: () {
                 onSelect(deviceItem);
               },

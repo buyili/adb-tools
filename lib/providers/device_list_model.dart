@@ -72,3 +72,7 @@ List<DeviceInfo> merge(
 final deviceListProvider = ChangeNotifierProvider<DeviceListModel>((ref){
   return DeviceListModel();
 });
+
+final selectedDeviceProvider = StateProvider<DeviceInfo?>((ref){
+  return null;
+});

@@ -3,12 +3,11 @@ import 'dart:async';
 import 'package:adb_tools/components/my_text_form_field.dart';
 import 'package:adb_tools/data/isar_db.dart';
 import 'package:adb_tools/data/models/device.dart';
-import 'package:adb_tools/providers/device_list_model.dart';
-import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:adb_tools/pages/man_page/apk_drop_target.dart';
 import 'package:adb_tools/pages/man_page/device_list.dart';
 import 'package:adb_tools/pages/man_page/main_page_right_side.dart';
-import 'package:cross_file/cross_file.dart';
+import 'package:adb_tools/providers/device_list_model.dart';
+import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
@@ -25,13 +24,9 @@ class MainPage extends ConsumerStatefulWidget {
 class _MainPageState extends ConsumerState<MainPage> {
   final Isar _isar = IsarDb.getIns();
 
-  DeviceInfo? selectedDevice;
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
   late DeviceListModel deviceListModel;
-
-  // selected apk files
-  final List<XFile> _apkFileList = [];
 
   @override
   void initState() {
@@ -56,12 +51,14 @@ class _MainPageState extends ConsumerState<MainPage> {
     deviceListModel.setHistoryDevices(
         dbDevices.map((device) => DeviceInfo.fromDevice(device)).toList());
 
+    var selectedDevice = ref.read(selectedDeviceProvider);
     if (selectedDevice != null) {
-      var idx = deviceListModel.allDevices.indexWhere(
-          (ele) => ele.serialNumber == selectedDevice?.serialNumber);
+      var idx = deviceListModel.allDevices
+          .indexWhere((ele) => ele.serialNumber == selectedDevice.serialNumber);
       if (idx != -1) {
         setState(() {
-          selectedDevice = deviceListModel.allDevices[idx];
+          ref.read(selectedDeviceProvider.notifier).state =
+              deviceListModel.allDevices[idx];
         });
       }
     }
@@ -109,8 +106,9 @@ class _MainPageState extends ConsumerState<MainPage> {
     var args = command.split(" ");
     args = args.where((arg) => arg.isNotEmpty).toList();
 
+    var selectedDevice = ref.read(selectedDeviceProvider);
     if (selectedDevice != null) {
-      args = ['-s', selectedDevice!.serialNumber, ...args];
+      args = ['-s', selectedDevice.serialNumber, ...args];
     }
 
     await ADBUtils.runCmd('adb', args);
@@ -157,16 +155,13 @@ class _MainPageState extends ConsumerState<MainPage> {
   }
 
   void onSelect(DeviceInfo device) {
+    var selectedDevice = ref.read(selectedDeviceProvider);
     if (selectedDevice == null) {
-      setState(() {
-        selectedDevice = device;
-      });
+      ref.read(selectedDeviceProvider.notifier).state = device;
       return;
     }
-    setState(() {
-      selectedDevice =
-          selectedDevice?.serialNumber == device.serialNumber ? null : device;
-    });
+    ref.read(selectedDeviceProvider.notifier).state =
+        selectedDevice.serialNumber == device.serialNumber ? null : device;
   }
 
   // open port for use adb over Wi-Fi
@@ -220,9 +215,9 @@ class _MainPageState extends ConsumerState<MainPage> {
   // disconnect device on TCP/IP
   void onDisconnect(DeviceInfo device) async {
     var success = await ADBUtils.disconnect(device.serialNumber);
-    if (success && device == selectedDevice) {
+    if (success && device == ref.watch(selectedDeviceProvider)) {
       setState(() {
-        selectedDevice = null;
+        ref.read(selectedDeviceProvider.notifier).state = null;
       });
     }
     await showConnectedDevices();
@@ -241,28 +236,6 @@ class _MainPageState extends ConsumerState<MainPage> {
         deviceListModel.removeHistoryDeviceById(device.id);
       },
     );
-  }
-
-  // start shizuku
-  void onStartShizuku() {
-    ADBUtils.startShizuku(selectedDevice!.serialNumber);
-  }
-
-  // install apk to device
-  void onInstall() {
-    ADBUtils.install(selectedDevice, _apkFileList);
-  }
-
-  // push file to device
-  void onPush() {
-    ADBUtils.push(selectedDevice, _apkFileList);
-  }
-
-  // clear all apk files
-  void onClearAll() {
-    setState(() {
-      _apkFileList.clear();
-    });
   }
 
   @override
@@ -285,23 +258,14 @@ class _MainPageState extends ConsumerState<MainPage> {
 
                     // device list
                     DeviceList(
-                      selectedDevice: selectedDevice,
                       onSelect: onSelect,
-                      onOpenTcpipPort: onOpenTcpipPort,
                       onConnect: onConnect,
                       onDisconnect: onDisconnect,
                       onDelete: onDelete,
                       onGetIpAndConnect: onGetIpAndConnect,
                     ),
 
-                    ApkDragTarget(
-                      list: _apkFileList,
-                      targetDevice: selectedDevice,
-                      onStartShizuku: onStartShizuku,
-                      onInstall: onInstall,
-                      onPush: onPush,
-                      onClearAll: onClearAll,
-                    ),
+                    const ApkDragTarget(),
                   ],
                 ),
               ),

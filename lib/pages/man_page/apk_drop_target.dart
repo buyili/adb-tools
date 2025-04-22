@@ -2,42 +2,58 @@ import 'package:adb_tools/utils/dialog_utils.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/models/device.dart';
+import '../../providers/device_list_model.dart';
+import '../../utils/adb_utils.dart';
 
-class ApkDragTarget extends StatefulWidget {
-  final List<XFile> list;
-  final DeviceInfo? targetDevice;
-  final Function() onStartShizuku;
-  final Function() onInstall;
-  final Function() onPush;
-  final Function() onClearAll;
+class ApkDragTarget extends ConsumerStatefulWidget {
 
   const ApkDragTarget({
     super.key,
-    required this.list,
-    required this.onInstall,
-    required this.onPush,
-    this.targetDevice,
-    required this.onClearAll, required this.onStartShizuku,
   });
 
   @override
-  State<ApkDragTarget> createState() => _ApkDragTargetState();
+  ConsumerState<ApkDragTarget> createState() => _ApkDragTargetState();
 }
 
-class _ApkDragTargetState extends State<ApkDragTarget> {
+class _ApkDragTargetState extends ConsumerState<ApkDragTarget> {
   bool _dragging = false;
+  final List<XFile> list = [];
+
+  // start shizuku
+  void _toggleStartShizuku() {
+    ADBUtils.startShizuku(ref.read(selectedDeviceProvider)!.serialNumber);
+  }
+
+  // install apk to device
+  void _toggleInstall() {
+    ADBUtils.install(ref.read(selectedDeviceProvider), list);
+  }
+
+  // push files to device
+  void _togglePushFiles() {
+    ADBUtils.push(ref.read(selectedDeviceProvider), list);
+  }
+
+  // clear all files
+  void _toggleClearAll() {
+    setState(() {
+      list.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    var isSelectedDevice = (widget.targetDevice != null);
+    var selectedDevice = ref.watch(selectedDeviceProvider);
+    var isSelectedDevice = (selectedDevice != null);
     var isSelectedDeviceAndFiles =
-        (widget.targetDevice != null && widget.list.isNotEmpty);
+        (selectedDevice != null && list.isNotEmpty);
+
     return DropTarget(
       onDragDone: (detail) {
         var files = detail.files.where((file) {
-          return !widget.list.any((item) {
+          return !list.any((item) {
             return item.path == file.path;
           });
         }).toList();
@@ -50,7 +66,7 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
           return;
         }
         setState(() {
-          widget.list.addAll(files);
+          list.addAll(files);
         });
       },
       onDragEntered: (detail) {
@@ -77,7 +93,7 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                       "Selected device:",
                     ),
                     Text(
-                      widget.targetDevice?.serialNumber ?? "None",
+                      selectedDevice?.serialNumber ?? "None",
                     ),
                   ],
                 ),
@@ -85,23 +101,25 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                   children: [
                     const SizedBox(width: 10),
                     FilledButton(
-                      onPressed: isSelectedDevice ? widget.onStartShizuku : null,
+                      onPressed: isSelectedDevice ? _toggleStartShizuku : null,
                       child: const Text("Start Shizuku"),
                     ),
                     const SizedBox(width: 10),
                     FilledButton(
-                      onPressed: isSelectedDeviceAndFiles ? widget.onInstall : null,
+                      onPressed:
+                          isSelectedDeviceAndFiles ? _toggleInstall : null,
                       child: const Text("Install"),
                     ),
                     const SizedBox(width: 10),
                     FilledButton(
-                      onPressed: isSelectedDeviceAndFiles ? widget.onPush : null,
+                      onPressed:
+                          isSelectedDeviceAndFiles ? _togglePushFiles : null,
                       child: const Text("Push"),
                     ),
                     const SizedBox(width: 16),
                     FilledButton(
                       onPressed:
-                          (widget.list.isNotEmpty) ? widget.onClearAll : null,
+                          (list.isNotEmpty) ? _toggleClearAll : null,
                       child: const Text("Clear All"),
                     ),
                   ],
@@ -118,11 +136,11 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                     ? Colors.black26
                     : Theme.of(context).primaryColor.withValues(alpha: 0.1),
               ),
-              child: widget.list.isEmpty
+              child: list.isEmpty
                   ? const Center(
                       child: Text("Drag and drop APK or other files here"))
                   : ListView.builder(
-                      itemCount: widget.list.length,
+                      itemCount: list.length,
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.only(
@@ -136,7 +154,7 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(widget.list[index].name),
+                                    Text(list[index].name),
                                     IconButton(
                                       icon: const Icon(
                                         Icons.delete,
@@ -144,7 +162,7 @@ class _ApkDragTargetState extends State<ApkDragTarget> {
                                       ),
                                       onPressed: () {
                                         setState(() {
-                                          widget.list.removeAt(index);
+                                          list.removeAt(index);
                                         });
                                       },
                                     ),
