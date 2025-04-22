@@ -103,7 +103,7 @@ class DeviceListTile extends ConsumerWidget {
                   // button to connect
                   IconButton.outlined(
                     onPressed: onGetIpAndConnect,
-                    icon: const Icon(Icons.link),
+                    icon: const Icon(Icons.wifi),
                     color: Theme.of(context).primaryColor,
                   ),
 
@@ -138,7 +138,7 @@ class DeviceListTile extends ConsumerWidget {
                   ]
                 ],
 
-                if (device.id > 0) ...[
+                if (device.isHistory) ...[
                   // button to delete history
                   IconButton.outlined(
                       onPressed: onDelete,

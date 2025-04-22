@@ -1,4 +1,3 @@
-import 'package:adb_tools/data/isar_db.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
@@ -24,9 +23,6 @@ Future<void> main() async {
     await windowManager.show();
     await windowManager.focus();
   });
-
-  // Initialize the Isar database
-  await IsarDb.initInstance();
 
   runApp(const ProviderScope(child: MainApp()));
 }

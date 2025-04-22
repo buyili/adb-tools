@@ -1,10 +1,6 @@
-import 'package:isar/isar.dart';
+import 'dart:convert';
 
-part 'device.g.dart';
-
-@collection
 class Device {
-  Id id = Isar.autoIncrement;
 
   String serialNumber = '';
   String? product;
@@ -12,11 +8,59 @@ class Device {
   String? device;
   String? transportId;
 
-  @override
-  String toString() {
-    return 'Device{id: $id, serialNumber: $serialNumber, product: $product, model: $model, device: $device, transportId: $transportId}';
+  Device({
+    this.serialNumber = '',
+    this.product,
+    this.model,
+    this.device,
+    this.transportId,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'serialNumber': serialNumber,
+      'product': product,
+      'model': model,
+      'device': device,
+      'transportId': transportId,
+    };
   }
 
+  factory Device.fromMap(Map<String, dynamic> map) {
+    return Device(
+      serialNumber: map['serialNumber']?.toString() ?? '',
+      product: map['product']?.toString(),
+      model: map['model']?.toString(),
+      device: map['device']?.toString(),
+      transportId: map['transportId']?.toString(),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Device.fromJson(String source) =>
+      Device.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  Device copyWith({
+    String? serialNumber,
+    String? product,
+    String? model,
+    String? device,
+    String? transportId,
+  }) {
+    return Device(
+      serialNumber: serialNumber ?? this.serialNumber,
+      product: product ?? this.product,
+      model: model ?? this.model,
+      device: device ?? this.device,
+      transportId: transportId ?? this.transportId,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'Device{serialNumber: $serialNumber, product: $product, model: $model, device: $device, transportId: $transportId}';
+  }
 }
 
 enum DeviceState {
@@ -35,21 +79,21 @@ class DeviceInfo extends Device {
   bool wifi = false;
   bool connected = false;
   bool isTitle = false;
+  bool isHistory = false;
 
   static DeviceInfo fromDevice(Device device) {
     return DeviceInfo()
-      ..id = device.id
       ..serialNumber = device.serialNumber
       ..product = device.product
       ..model = device.model
       ..device = device.device
       ..transportId = device.transportId
-      ..wifi = true;
+      ..wifi = true
+      ..isHistory = true;
   }
 
   DeviceInfo clone() {
     return DeviceInfo()
-      ..id = id
       ..serialNumber = serialNumber
       ..state = state
       ..product = product
@@ -59,12 +103,13 @@ class DeviceInfo extends Device {
       ..name = name
       ..wifi = wifi
       ..connected = connected
-      ..isTitle = isTitle;
+      ..isTitle = isTitle
+      ..isHistory = isHistory;
   }
 
   @override
   String toString() {
     return '${super.toString()}'
-        ' DeviceInfo{state: $state, name: $name, wifi: $wifi, connected: $connected, isTitle: $isTitle}';
+        ' DeviceInfo{state: $state, name: $name, wifi: $wifi, connected: $connected, isTitle: $isTitle}, isHistory: $isHistory}';
   }
 }

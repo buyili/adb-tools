@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:adb_tools/components/my_text_form_field.dart';
-import 'package:adb_tools/data/isar_db.dart';
 import 'package:adb_tools/data/models/device.dart';
+import 'package:adb_tools/db/db.dart';
 import 'package:adb_tools/pages/man_page/apk_drop_target.dart';
 import 'package:adb_tools/pages/man_page/device_list.dart';
 import 'package:adb_tools/pages/man_page/main_page_right_side.dart';
@@ -10,7 +10,6 @@ import 'package:adb_tools/providers/device_list_model.dart';
 import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:isar/isar.dart';
 
 const String defaultPort = '5555';
 
@@ -22,8 +21,6 @@ class MainPage extends ConsumerStatefulWidget {
 }
 
 class _MainPageState extends ConsumerState<MainPage> {
-  final Isar _isar = IsarDb.getIns();
-
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
   late DeviceListModel deviceListModel;
@@ -46,54 +43,48 @@ class _MainPageState extends ConsumerState<MainPage> {
   // show connected devices
   Future<void> showConnectedDevices({
     bool printOutput = true,
-}) async {
-    List<DeviceInfo> tempConnectedDevices = await ADBUtils.devices(printOutput: printOutput);
-    var dbDevices = _isar.devices.where().findAllSync();
+  }) async {
+    List<DeviceInfo> tempConnectedDevices =
+        await ADBUtils.devices(printOutput: printOutput);
+    var dbDevices = await Db.getSavedAdbDevice();
     deviceListModel.setConnectedDevices(tempConnectedDevices);
     deviceListModel.setHistoryDevices(
         dbDevices.map((device) => DeviceInfo.fromDevice(device)).toList());
 
     var selectedDevice = ref.read(selectedDeviceProvider);
     if (selectedDevice != null) {
-      var idx = deviceListModel.allDevices
+      var idx = deviceListModel.connectedDevices
           .indexWhere((ele) => ele.serialNumber == selectedDevice.serialNumber);
       if (idx != -1) {
         setState(() {
           ref.read(selectedDeviceProvider.notifier).state =
-              deviceListModel.allDevices[idx];
+              deviceListModel.connectedDevices[idx];
         });
       }
     }
 
-    // Update isar data
-    _isar.writeTxnSync(() {
-      for (var onlineDevice in tempConnectedDevices) {
-        var idx = dbDevices
-            .indexWhere((ele) => ele.serialNumber == onlineDevice.serialNumber);
+    for (var onlineDevice in tempConnectedDevices) {
+      var idx = dbDevices
+          .indexWhere((ele) => ele.serialNumber == onlineDevice.serialNumber);
 
-        if (idx == -1 && onlineDevice.wifi) {
-          var newDevice = Device()
-            ..serialNumber = onlineDevice.serialNumber
-            ..product = onlineDevice.product
-            ..model = onlineDevice.model
-            ..device = onlineDevice.device
-            ..transportId = onlineDevice.transportId;
-          _isar.devices.putSync(newDevice);
-          deviceListModel.addHistoryDevice(newDevice);
-          continue;
-        }
-
-        final dbDevice = _isar.devices.getSync(onlineDevice.id);
-        if (dbDevice == null) continue;
-        dbDevice
+      if (idx != -1) {
+        dbDevices[idx]
           ..serialNumber = onlineDevice.serialNumber
           ..product = onlineDevice.product
           ..model = onlineDevice.model
           ..device = onlineDevice.device
           ..transportId = onlineDevice.transportId;
-        _isar.devices.putSync(dbDevice);
+      } else if (onlineDevice.wifi) {
+        var newDevice = Device()
+          ..serialNumber = onlineDevice.serialNumber
+          ..product = onlineDevice.product
+          ..model = onlineDevice.model
+          ..device = onlineDevice.device
+          ..transportId = onlineDevice.transportId;
+        dbDevices.add(newDevice);
       }
-    });
+    }
+    Db.saveAdbDevice(dbDevices);
   }
 
   // execute enter command
@@ -126,7 +117,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       return;
     }
 
-    onSaveDeviceIPAddressToDB(ip, port);
+    onSaveDeviceIPAddressToDB(ip, port, showExistsSnackBar: false);
   }
 
   // save ip address and port to isar
@@ -134,25 +125,18 @@ class _MainPageState extends ConsumerState<MainPage> {
       {bool showExistsSnackBar = true}) async {
     // save ip address and port to isar
     var serialNumber = '$ip:$port';
-    int count = _isar.devices
-        .where()
-        .filter()
-        .serialNumberEqualTo(serialNumber)
-        .countSync();
-    if (count == 0) {
-      var newDevice = Device()..serialNumber = serialNumber;
-      _isar.writeTxnSync(() {
-        _isar.devices.putSync(
-          newDevice,
-        );
-      });
-      deviceListModel.addHistoryDevice(newDevice);
-    } else {
+    bool exists = deviceListModel.historyDevices
+        .any((device) => device.serialNumber == serialNumber);
+    if (exists) {
       if (showExistsSnackBar) {
         scaffoldMessengerKey.currentState?.showSnackBar(
           SnackBar(content: Text('$serialNumber already exists.')),
         );
       }
+    } else {
+      var newDevice = Device()..serialNumber = serialNumber;
+      deviceListModel.addHistoryDevice(newDevice);
+      Db.saveAdbDevice(deviceListModel.historyDevices);
     }
   }
 
@@ -193,7 +177,7 @@ class _MainPageState extends ConsumerState<MainPage> {
     if (ip.isEmpty) {
       // show snackbar if ip is empty
       var snackBar = SnackBar(
-        content: Text('Not found device ip for ${device.serialNumber}.'),
+        content: Text('Not found device ip for [${device.serialNumber}].'),
         action: SnackBarAction(
           label: 'Close',
           onPressed: () {
@@ -232,10 +216,8 @@ class _MainPageState extends ConsumerState<MainPage> {
       'Delete Device',
       'Are you sure you want to delete ${device.serialNumber}?',
       () {
-        _isar.writeTxnSync(() {
-          _isar.devices.deleteSync(device.id);
-        });
-        deviceListModel.removeHistoryDeviceById(device.id);
+        deviceListModel.removeHistoryDeviceById(device.serialNumber);
+        Db.saveAdbDevice(deviceListModel.historyDevices);
       },
     );
   }
@@ -290,7 +272,11 @@ class TopForm extends StatefulWidget {
   final Function onSubmit;
   final Function onSave;
 
-  const TopForm({super.key, required this.onSubmit, required this.onSave});
+  const TopForm({
+    super.key,
+    required this.onSubmit,
+    required this.onSave,
+  });
 
   @override
   State<TopForm> createState() => _TopFormState();
@@ -300,6 +286,32 @@ class _TopFormState extends State<TopForm> {
   final _formKey = GlobalKey<FormState>();
   final _ipController = TextEditingController();
   final _portController = TextEditingController();
+
+  List<String> getIpAndPort() {
+    var ip = '';
+    var port = '';
+    if (_ipController.text.contains(':')) {
+      ip = _ipController.text.split(':')[0];
+      port = _ipController.text.split(':')[1];
+    } else {
+      ip = _ipController.text;
+      port =
+          _portController.text.isNotEmpty ? _portController.text : defaultPort;
+    }
+    return [ip, port];
+  }
+
+  void _toggleConnect() {
+    if (_formKey.currentState!.validate()) {
+      widget.onSubmit(getIpAndPort()[0], getIpAndPort()[1]);
+    }
+  }
+
+  void _toggleSave() {
+    if (_formKey.currentState!.validate()) {
+      widget.onSave(getIpAndPort()[0], getIpAndPort()[1]);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -312,10 +324,10 @@ class _TopFormState extends State<TopForm> {
           children: [
             // in text field
             SizedBox(
-              width: 140,
+              width: 180,
               child: MyTextFormField(
                 controller: _ipController,
-                hintText: '192.168.2.207',
+                hintText: 'ip or ip:port',
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter ip address.';
@@ -347,14 +359,7 @@ class _TopFormState extends State<TopForm> {
             // connect button
             FilledButton.tonal(
               onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  widget.onSubmit(
-                    _ipController.text,
-                    _portController.text.isNotEmpty
-                        ? _portController.text
-                        : defaultPort,
-                  );
-                }
+                _toggleConnect();
               },
               child: const Text('Connect'),
             ),
@@ -364,14 +369,7 @@ class _TopFormState extends State<TopForm> {
             // save button
             FilledButton(
               onPressed: () {
-                if (_formKey.currentState!.validate()) {
-                  widget.onSave(
-                    _ipController.text,
-                    _portController.text.isNotEmpty
-                        ? _portController.text
-                        : defaultPort,
-                  );
-                }
+                _toggleSave();
               },
               child: const Text('Save'),
             ),

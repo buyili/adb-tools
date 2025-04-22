@@ -28,8 +28,8 @@ class DeviceListModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeHistoryDeviceById(int id) {
-    historyDevices.removeWhere((device) => device.id == id);
+  void removeHistoryDeviceById(String serialNumber) {
+    historyDevices.removeWhere((device) => device.serialNumber == serialNumber);
     allDevices = merge(connectedDevices, historyDevices);
     notifyListeners();
   }
@@ -39,40 +39,36 @@ List<DeviceInfo> merge(
   List<DeviceInfo> connectedDeviceInfos,
   List<DeviceInfo> historyDeviceInfos,
 ) {
-  if (historyDeviceInfos.isEmpty && connectedDeviceInfos.isEmpty) {
-    return [];
-  }
-
   var tempC = connectedDeviceInfos.map((item) => item.clone()).toList();
   var tempH = historyDeviceInfos.map((item) => item.clone()).toList();
+
+  var connectedTitle = DeviceInfo()
+    ..isTitle = true
+    ..name = 'Connected devices: ${tempC.length}';
+  var previouslyTitle = DeviceInfo()
+    ..isTitle = true
+    ..name = 'Previously connected devices: ${tempH.length}';
+
+  if (historyDeviceInfos.isEmpty && connectedDeviceInfos.isEmpty) {
+    return [connectedTitle, previouslyTitle];
+  }
+
   if (tempC.isNotEmpty && tempH.isNotEmpty) {
-    for (var info in tempC) {
+    for (var connedItem in tempC) {
       var idx = tempH
-          .indexWhere((device) => device.serialNumber == info.serialNumber);
+          .indexWhere((device) => device.serialNumber == connedItem.serialNumber);
       if (idx == -1) continue;
-      Device device = tempH[idx];
-      info.id = device.id;
       tempH.removeAt(idx);
     }
   }
-  return [
-        DeviceInfo()
-          ..isTitle = true
-          ..name = 'Connected devices: ${tempC.length}'
-      ] +
-      tempC +
-      [
-        DeviceInfo()
-          ..isTitle = true
-          ..name = 'Previously connected devices: ${tempH.length}'
-      ] +
-      tempH;
+
+  return [connectedTitle] + tempC + [previouslyTitle] + tempH;
 }
 
-final deviceListProvider = ChangeNotifierProvider<DeviceListModel>((ref){
+final deviceListProvider = ChangeNotifierProvider<DeviceListModel>((ref) {
   return DeviceListModel();
 });
 
-final selectedDeviceProvider = StateProvider<DeviceInfo?>((ref){
+final selectedDeviceProvider = StateProvider<DeviceInfo?>((ref) {
   return null;
 });

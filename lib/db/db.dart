@@ -2,12 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/models/device.dart';
 import '../models/scrcpy_related/scrcpy_config.dart';
 import '../providers/config_provider.dart';
 import '../utils/const.dart';
 import '../utils/prefs_key.dart';
 
 class Db {
+
+  /*
+  Device DB
+  */
+
+  static Future<void> saveAdbDevice(List<Device> dev) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setStringList(
+        PKEY_SAVED_DEVICES, dev.map((e) => e.toJson()).toList());
+    // prefs.remove(PKEY_SAVED_DEVICES);
+  }
+
+  static Future<List<Device>> getSavedAdbDevice() async {
+    final prefs = await SharedPreferences.getInstance();
+    // prefs.remove(PKEY_SAVED_DEVICES);
+    final jsons = prefs.getStringList(PKEY_SAVED_DEVICES) ?? [];
+
+    return jsons.map((e) => Device.fromJson(e)).toList();
+  }
 
   /*
   Configs DB
