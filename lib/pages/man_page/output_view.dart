@@ -1,4 +1,4 @@
-import 'package:adb_tools/providers/cmd_task.dart';
+import 'package:adb_tools/models/cmd_task.dart';
 import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:adb_tools/models/scrcpy_related/scrcpy_config.dart';
-import 'package:adb_tools/providers/cmd_task.dart';
+import 'package:adb_tools/models/cmd_task.dart';
 import 'package:process_run/process_run.dart';
 
 import '../providers/output_text_model.dart';
