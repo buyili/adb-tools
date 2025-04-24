@@ -1,5 +1,5 @@
 import 'package:adb_tools/models/device.dart';
-import 'package:adb_tools/providers/device_list_model.dart';
+import 'package:adb_tools/providers/device_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,7 +30,7 @@ class DeviceList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<DeviceInfo> devices = ref.watch(deviceListProvider).allDevices;
+    List<DeviceInfo> devices = ref.watch(deviceListNotifierProvider).allDevices;
     DeviceInfo? selectedDevice = ref.watch(selectedDeviceProvider);
 
     return Expanded(

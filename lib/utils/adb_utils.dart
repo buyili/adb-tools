@@ -21,14 +21,14 @@ class ADBUtils {
     bool printOutput = true,
   }) async {
     // get OutputTextModel instance.
-    OutputTextModel model = OutputTextModelFactory.getIns();
+    OutputTextNotifier notifier = OutputTextModelFactory.getIns();
 
     // serialize args
     String argsText =
         argsSerialize != null ? argsSerialize(args) : args.join(" ");
     late int taskIndex;
     if (printOutput) {
-      taskIndex = model.addTask('$cmd $argsText');
+      taskIndex = notifier.addTask('$cmd $argsText');
     }
 
     final result = await cmdPlus.run(
@@ -43,9 +43,9 @@ class ADBUtils {
     );
 
     if (printOutput) {
-      model.updateTask(taskIndex,
+      notifier.updateTask(taskIndex,
           '${result.error.isNotEmpty ? result.error : result.output}\n');
-      model.updateTaskStatus(taskIndex, CmdTaskStatus.success);
+      notifier.updateTaskStatus(taskIndex, CmdTaskStatus.success);
     }
 
     return result;

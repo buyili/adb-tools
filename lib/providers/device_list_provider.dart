@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/device.dart';
 
-class DeviceListModel extends ChangeNotifier {
+class DeviceListNotifier extends ChangeNotifier {
   List<DeviceInfo> historyDevices = [];
   List<DeviceInfo> connectedDevices = [];
   List<DeviceInfo> allDevices = [];
@@ -65,8 +65,8 @@ List<DeviceInfo> merge(
   return [connectedTitle] + tempC + [previouslyTitle] + tempH;
 }
 
-final deviceListProvider = ChangeNotifierProvider<DeviceListModel>((ref) {
-  return DeviceListModel();
+final deviceListNotifierProvider = ChangeNotifierProvider<DeviceListNotifier>((ref) {
+  return DeviceListNotifier();
 });
 
 final selectedDeviceProvider = StateProvider<DeviceInfo?>((ref) {

@@ -6,7 +6,7 @@ import 'package:adb_tools/db/db.dart';
 import 'package:adb_tools/pages/man_page/apk_drop_target.dart';
 import 'package:adb_tools/pages/man_page/device_list.dart';
 import 'package:adb_tools/pages/man_page/main_page_right_side.dart';
-import 'package:adb_tools/providers/device_list_model.dart';
+import 'package:adb_tools/providers/device_list_provider.dart';
 import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,11 +23,11 @@ class MainPage extends ConsumerStatefulWidget {
 class _MainPageState extends ConsumerState<MainPage> {
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
-  late DeviceListModel deviceListModel;
+  late DeviceListNotifier deviceListNotifier;
 
   @override
   void initState() {
-    deviceListModel = ref.read(deviceListProvider);
+    deviceListNotifier = ref.read(deviceListNotifierProvider);
 
     // execute method after current widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -47,19 +47,17 @@ class _MainPageState extends ConsumerState<MainPage> {
     List<DeviceInfo> tempConnectedDevices =
         await ADBUtils.devices(printOutput: printOutput);
     var dbDevices = await Db.getSavedAdbDevice();
-    deviceListModel.setConnectedDevices(tempConnectedDevices);
-    deviceListModel.setHistoryDevices(
+    deviceListNotifier.setConnectedDevices(tempConnectedDevices);
+    deviceListNotifier.setHistoryDevices(
         dbDevices.map((device) => DeviceInfo.fromDevice(device)).toList());
 
     var selectedDevice = ref.read(selectedDeviceProvider);
     if (selectedDevice != null) {
-      var idx = deviceListModel.connectedDevices
+      var idx = deviceListNotifier.connectedDevices
           .indexWhere((ele) => ele.serialNumber == selectedDevice.serialNumber);
       if (idx != -1) {
-        setState(() {
-          ref.read(selectedDeviceProvider.notifier).state =
-              deviceListModel.connectedDevices[idx];
-        });
+        ref.read(selectedDeviceProvider.notifier).state =
+            deviceListNotifier.connectedDevices[idx];
       }
     }
 
@@ -125,7 +123,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       {bool showExistsSnackBar = true}) async {
     // save ip address and port to isar
     var serialNumber = '$ip:$port';
-    bool exists = deviceListModel.historyDevices
+    bool exists = deviceListNotifier.historyDevices
         .any((device) => device.serialNumber == serialNumber);
     if (exists) {
       if (showExistsSnackBar) {
@@ -135,8 +133,8 @@ class _MainPageState extends ConsumerState<MainPage> {
       }
     } else {
       var newDevice = Device()..serialNumber = serialNumber;
-      deviceListModel.addHistoryDevice(newDevice);
-      Db.saveAdbDevice(deviceListModel.historyDevices);
+      deviceListNotifier.addHistoryDevice(newDevice);
+      Db.saveAdbDevice(deviceListNotifier.historyDevices);
     }
   }
 
@@ -202,9 +200,7 @@ class _MainPageState extends ConsumerState<MainPage> {
   void onDisconnect(DeviceInfo device) async {
     var success = await ADBUtils.disconnect(device.serialNumber);
     if (success && device == ref.watch(selectedDeviceProvider)) {
-      setState(() {
-        ref.read(selectedDeviceProvider.notifier).state = null;
-      });
+      ref.read(selectedDeviceProvider.notifier).state = null;
     }
     await showConnectedDevices();
   }
@@ -216,8 +212,8 @@ class _MainPageState extends ConsumerState<MainPage> {
       'Delete Device',
       'Are you sure you want to delete ${device.serialNumber}?',
       () {
-        deviceListModel.removeHistoryDeviceById(device.serialNumber);
-        Db.saveAdbDevice(deviceListModel.historyDevices);
+        deviceListNotifier.removeHistoryDeviceById(device.serialNumber);
+        Db.saveAdbDevice(deviceListNotifier.historyDevices);
       },
     );
   }

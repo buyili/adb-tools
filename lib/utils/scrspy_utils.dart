@@ -16,9 +16,9 @@ class ScrcpyUtils {
 
   static Future<void> run(String script) async {
     // get OutputTextModel instance.
-    OutputTextModel model = OutputTextModelFactory.getIns();
+    OutputTextNotifier notifier = OutputTextModelFactory.getIns();
 
-    int taskIndex = model.addTask(script);
+    int taskIndex = notifier.addTask(script);
 
     var controller = ShellLinesController();
     var shell = Shell(
@@ -29,7 +29,7 @@ class ScrcpyUtils {
         verbose: false);
     controller.stream.listen((event) {
       // Handle output
-      model.addTaskOutputLine(taskIndex, event);
+      notifier.addTaskOutputLine(taskIndex, event);
 
       // ...
       // If needed kill the shell
@@ -38,10 +38,10 @@ class ScrcpyUtils {
     try {
       await shell.run(script);
 
-      model.updateTaskStatus(taskIndex, CmdTaskStatus.success);
+      notifier.updateTaskStatus(taskIndex, CmdTaskStatus.success);
     } on ShellException catch (_) {
       // We might get a shell exception
-      model.updateTaskStatus(taskIndex, CmdTaskStatus.failure);
+      notifier.updateTaskStatus(taskIndex, CmdTaskStatus.failure);
     }
   }
 

@@ -4,7 +4,7 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../providers/device_list_model.dart';
+import '../../providers/device_list_provider.dart';
 import '../../utils/adb_utils.dart';
 
 class ApkDragTarget extends ConsumerStatefulWidget {

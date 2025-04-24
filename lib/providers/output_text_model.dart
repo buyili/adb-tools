@@ -2,7 +2,7 @@ import 'package:adb_tools/providers/cmd_task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OutputTextModel extends ChangeNotifier {
+class OutputTextNotifier extends ChangeNotifier {
   List<CmdTask> tasks = [];
 
   int addTask(String cmd) {
@@ -39,17 +39,17 @@ class OutputTextModel extends ChangeNotifier {
 }
 
 class OutputTextModelFactory {
-  static OutputTextModel? model;
+  static OutputTextNotifier? notifier;
 
-  static OutputTextModel getIns(){
-    if(model != null) {
-      return model!;
+  static OutputTextNotifier getIns(){
+    if(notifier != null) {
+      return notifier!;
     }
-    model = OutputTextModel();
-    return model!;
+    notifier = OutputTextNotifier();
+    return notifier!;
   }
 }
 
-final outputTextProvider = ChangeNotifierProvider<OutputTextModel>((ref){
+final outputTextProvider = ChangeNotifierProvider<OutputTextNotifier>((ref){
   return OutputTextModelFactory.getIns();
 });

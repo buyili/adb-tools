@@ -38,14 +38,14 @@ class _OutputViewState extends ConsumerState<OutputView> {
       ),
       child: Consumer(
         builder: (context, ref, child) {
-          OutputTextModel model = ref.watch(outputTextProvider);
+          OutputTextNotifier outputTextNotifier = ref.watch(outputTextProvider);
           return ListView.builder(
-            itemCount: model.tasks.length,
+            itemCount: outputTextNotifier.tasks.length,
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
             reverse: true,
             controller: _scrollController,
             itemBuilder: (context, index) {
-              CmdTask task = model.tasks[model.tasks.length - 1 - index];
+              CmdTask task = outputTextNotifier.tasks[outputTextNotifier.tasks.length - 1 - index];
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
