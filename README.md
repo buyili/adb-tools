@@ -1,6 +1,6 @@
 # ADB Tools
 
-A simple GUI for ADB.
+A simple GUI for ADB and Scrcpy.
 
 ## Environment
 
