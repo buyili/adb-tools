@@ -1,5 +1,6 @@
 import 'package:adb_tools/pages/man_page/output_view.dart';
 import 'package:adb_tools/providers/config_provider.dart';
+import 'package:adb_tools/providers/device_list_provider.dart';
 import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,16 +8,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../components/divide_title.dart';
 import '../../components/my_checkbox.dart';
 import '../../db/db.dart';
+import '../../utils/adb_utils.dart';
+
+class CommonCommandModel {
+  String args;
+  bool needDevice;
+  CommonCommandModel(this.args, this.needDevice);
+}
+
+final commonCommandModels = [
+  CommonCommandModel('version', false),
+  CommonCommandModel('devices', false),
+  CommonCommandModel('devices -l', false),
+  CommonCommandModel('shell wm size', true),
+  CommonCommandModel('shell getprop service.adb.tcp.port', true),
+  CommonCommandModel('shell ip addr show wlan0', true),
+];
 
 /// right side widget
 class RightSideWidget extends ConsumerStatefulWidget {
   final Function onShowDevices;
-  final Function onExecute;
 
   const RightSideWidget({
     super.key,
     required this.onShowDevices,
-    required this.onExecute,
   });
 
   @override
@@ -38,8 +53,40 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
     ref.read(configScreenConfig.notifier).setConfig(savedMainConfig);
   }
 
-  void onInputArgs(String args) {
-    widget.onExecute(args);
+  Future<void> _toggleExecute(String text) async {
+    String command = text;
+    if (command.isEmpty) {
+      return;
+    }
+    command = command.trim();
+    command = command.replaceAll(RegExp('^adb'), '');
+    command = command.replaceAll('\n', '');
+    var args = command.split(" ");
+    args = args.where((arg) => arg.isNotEmpty).toList();
+
+    var selectedDevice = ref.read(selectedDeviceProvider);
+    if (selectedDevice != null) {
+      args = ['-s', selectedDevice.serialNumber, ...args];
+    }
+
+    await ADBUtils.runCmd('adb', args);
+  }
+
+  // execute example command
+  Future<void> _toggleEgCommand(CommonCommandModel commandModel) async {
+    String command = commandModel.args;
+    if (command.isEmpty) {
+      return;
+    }
+    var args = command.split(" ");
+    args = args.where((arg) => arg.isNotEmpty).toList();
+
+    var selectedDevice = ref.read(selectedDeviceProvider);
+    if (commandModel.needDevice && selectedDevice != null) {
+      args = ['-s', selectedDevice.serialNumber, ...args];
+    }
+
+    await ADBUtils.runCmd('adb', args);
   }
 
   Future<void> _toggleTurnOffDisplay(bool? value) async {
@@ -106,43 +153,38 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
           ],
         ),
         const SizedBox(height: 10.0),
-
         TextField(
           keyboardType: TextInputType.multiline,
           maxLines: null,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            border: const OutlineInputBorder(),
             labelText: 'Enter Command',
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                _textController.clear();
+              },
+            ),
           ),
           controller: _textController,
         ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('eg: '),
-            ClickableText(
-              text: 'version',
-              onTap: onInputArgs,
-            ),
-            const Text(', '),
-            ClickableText(
-              text: 'devices',
-              onTap: onInputArgs,
-            ),
-            const Text(', '),
-            ClickableText(
-              text: 'devices -l',
-              onTap: onInputArgs,
-            ),
-            const Text(', '),
-            ClickableText(
-              text: 'shell wm size',
-              onTap: onInputArgs,
-            ),
+            Expanded(
+              child: Wrap(children: [
+                for (final commandModel in commonCommandModels)
+                  ClickableText(
+                    commandModel: commandModel,
+                    onTap: () {
+                      _toggleEgCommand(commandModel);
+                    },
+                  ),
+              ]),
+            )
           ],
         ),
-        // const Text(
-        //   'eg: version, devices, devices -l, shell wm size',
-        // ),
         const SizedBox(height: 10.0),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -158,7 +200,7 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
                 const SizedBox(width: 10.0),
                 ElevatedButton(
                   onPressed: () {
-                    widget.onExecute(_textController.text);
+                    _toggleExecute(_textController.text);
                   },
                   child: const Text('Execute'),
                 ),
@@ -179,26 +221,38 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
   }
 }
 
-class ClickableText extends StatelessWidget {
-  const ClickableText({super.key, required this.text, this.onTap});
+class ClickableText extends ConsumerWidget {
+  const ClickableText({super.key, this.onTap, required this.commandModel});
 
-  final String text;
-  final Function(String)? onTap;
+  final Function()? onTap;
+  final CommonCommandModel commandModel;
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (onTap != null) {
-          onTap!(text);
-        }
-      },
-      child: MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: Text(
-            text,
-            style: const TextStyle(color: Colors.blue),
-          )),
+  Widget build(BuildContext context, WidgetRef ref) {
+    TextStyle? textStyle = const TextStyle(color: Colors.blue);
+    MouseCursor mouseCursor = SystemMouseCursors.click;
+    if (commandModel.needDevice) {
+      final sDevice = ref.watch(selectedDeviceProvider);
+      if (sDevice == null) {
+        textStyle = null;
+        mouseCursor = MouseCursor.defer;
+      }
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: MouseRegion(
+              cursor: mouseCursor,
+              child: Text(
+                commandModel.args,
+                style: textStyle,
+              )),
+        ),
+        const Text(', '),
+      ],
     );
   }
 }

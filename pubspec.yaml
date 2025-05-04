@@ -33,4 +33,4 @@ flutter:
     - assets/
     - assets/adb-win/
     - assets/scrcpy-win64/
-    - lib/images/
+    

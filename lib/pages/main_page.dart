@@ -85,26 +85,6 @@ class _MainPageState extends ConsumerState<MainPage> {
     Db.saveAdbDevice(dbDevices);
   }
 
-  // execute enter command
-  Future<void> onExecuteEnterCommand(text) async {
-    String command = text;
-    if (command.isEmpty) {
-      return;
-    }
-    command = command.trim();
-    command = command.replaceAll('adb', '');
-    command = command.replaceAll('\n', '');
-    var args = command.split(" ");
-    args = args.where((arg) => arg.isNotEmpty).toList();
-
-    var selectedDevice = ref.read(selectedDeviceProvider);
-    if (selectedDevice != null) {
-      args = ['-s', selectedDevice.serialNumber, ...args];
-    }
-
-    await ADBUtils.runCmd('adb', args);
-  }
-
   // connect to device and save ip address and port to isar
   void onConnectInputIPAddress(String ip, String port) async {
     // connect to device
@@ -256,7 +236,6 @@ class _MainPageState extends ConsumerState<MainPage> {
                 flex: 5,
                 child: RightSideWidget(
                   onShowDevices: showConnectedDevices,
-                  onExecute: onExecuteEnterCommand,
                 ),
               ),
             ],
