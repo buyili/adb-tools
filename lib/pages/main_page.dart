@@ -5,7 +5,7 @@ import 'package:adb_tools/models/device.dart';
 import 'package:adb_tools/db/db.dart';
 import 'package:adb_tools/pages/man_page/apk_drop_target.dart';
 import 'package:adb_tools/pages/man_page/device_list.dart';
-import 'package:adb_tools/pages/man_page/main_page_right_side.dart';
+import 'package:adb_tools/pages/man_page/right_side.dart';
 import 'package:adb_tools/providers/device_list_provider.dart';
 import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:flutter/material.dart';

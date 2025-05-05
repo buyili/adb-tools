@@ -1,7 +1,9 @@
+import 'package:adb_tools/pages/man_page/clickable_text.dart';
 import 'package:adb_tools/pages/man_page/output_view.dart';
 import 'package:adb_tools/providers/config_provider.dart';
 import 'package:adb_tools/providers/device_list_provider.dart';
 import 'package:adb_tools/providers/output_text_model.dart';
+import 'package:adb_tools/models/command_example.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,19 +12,13 @@ import '../../components/my_checkbox.dart';
 import '../../db/db.dart';
 import '../../utils/adb_utils.dart';
 
-class CommonCommandModel {
-  String args;
-  bool needDevice;
-  CommonCommandModel(this.args, this.needDevice);
-}
-
-final commonCommandModels = [
-  CommonCommandModel('version', false),
-  CommonCommandModel('devices', false),
-  CommonCommandModel('devices -l', false),
-  CommonCommandModel('shell wm size', true),
-  CommonCommandModel('shell getprop service.adb.tcp.port', true),
-  CommonCommandModel('shell ip addr show wlan0', true),
+final commandExamples = [
+  CommandExample('version', false),
+  CommandExample('devices', false),
+  CommandExample('devices -l', false),
+  CommandExample('shell wm size', true),
+  CommandExample('shell getprop service.adb.tcp.port', true),
+  CommandExample('shell ip addr show wlan0', true),
 ];
 
 /// right side widget
@@ -73,7 +69,7 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
   }
 
   // execute example command
-  Future<void> _toggleEgCommand(CommonCommandModel commandModel) async {
+  Future<void> _toggleEgCommand(CommandExample commandModel) async {
     String command = commandModel.args;
     if (command.isEmpty) {
       return;
@@ -174,9 +170,9 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
             const Text('eg: '),
             Expanded(
               child: Wrap(children: [
-                for (final commandModel in commonCommandModels)
+                for (final commandModel in commandExamples)
                   ClickableText(
-                    commandModel: commandModel,
+                    example: commandModel,
                     onTap: () {
                       _toggleEgCommand(commandModel);
                     },
@@ -216,42 +212,6 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
         const Expanded(
           child: OutputView(),
         ),
-      ],
-    );
-  }
-}
-
-class ClickableText extends ConsumerWidget {
-  const ClickableText({super.key, this.onTap, required this.commandModel});
-
-  final Function()? onTap;
-  final CommonCommandModel commandModel;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    TextStyle? textStyle = const TextStyle(color: Colors.blue);
-    MouseCursor mouseCursor = SystemMouseCursors.click;
-    if (commandModel.needDevice) {
-      final sDevice = ref.watch(selectedDeviceProvider);
-      if (sDevice == null) {
-        textStyle = null;
-        mouseCursor = MouseCursor.defer;
-      }
-    }
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        GestureDetector(
-          onTap: onTap,
-          child: MouseRegion(
-              cursor: mouseCursor,
-              child: Text(
-                commandModel.args,
-                style: textStyle,
-              )),
-        ),
-        const Text(', '),
       ],
     );
   }
