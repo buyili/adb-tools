@@ -14,7 +14,9 @@ class CopyableText extends StatelessWidget {
         await Clipboard.setData(ClipboardData(text: text));
         // 可选：显示一个SnackBar来通知用户文本已复制
         const snackBar = SnackBar(content: Text('文本已复制到剪切板'));
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        if(context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
       },
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
