@@ -8,8 +8,14 @@ class DeviceListNotifier extends ChangeNotifier {
   List<DeviceInfo> connectedDevices = [];
   List<DeviceInfo> allDevices = [];
 
-  void setHistoryDevices(List<DeviceInfo> devices) {
-    historyDevices = devices;
+  void setHistoryDevices(List<Device> devices) {
+    if(devices.isEmpty){
+      historyDevices = [];
+    } else {
+      historyDevices = (devices[0] is DeviceInfo)
+          ? devices as List<DeviceInfo>
+          : devices.map((device) => DeviceInfo.fromDevice(device)).toList();
+    }
     allDevices = merge(connectedDevices, historyDevices);
     notifyListeners();
   }
@@ -55,8 +61,8 @@ List<DeviceInfo> merge(
 
   if (tempC.isNotEmpty && tempH.isNotEmpty) {
     for (var connedItem in tempC) {
-      var idx = tempH
-          .indexWhere((device) => device.serialNumber == connedItem.serialNumber);
+      var idx = tempH.indexWhere(
+          (device) => device.serialNumber == connedItem.serialNumber);
       if (idx == -1) continue;
       tempH.removeAt(idx);
     }
@@ -65,7 +71,8 @@ List<DeviceInfo> merge(
   return [connectedTitle] + tempC + [previouslyTitle] + tempH;
 }
 
-final deviceListNotifierProvider = ChangeNotifierProvider<DeviceListNotifier>((ref) {
+final deviceListNotifierProvider =
+    ChangeNotifierProvider<DeviceListNotifier>((ref) {
   return DeviceListNotifier();
 });
 

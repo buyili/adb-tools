@@ -29,6 +29,8 @@ class _MainPageState extends ConsumerState<MainPage> {
   void initState() {
     deviceListNotifier = ref.read(deviceListNotifierProvider);
 
+    _init();
+
     // execute method after current widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showConnectedDevices();
@@ -40,27 +42,13 @@ class _MainPageState extends ConsumerState<MainPage> {
     super.initState();
   }
 
-  // show connected devices
-  Future<void> showConnectedDevices({
-    bool printOutput = true,
-  }) async {
-    List<DeviceInfo> tempConnectedDevices =
-        await ADBUtils.devices(printOutput: printOutput);
+  Future<void> _init() async {
     var dbDevices = await Db.getSavedAdbDevice();
-    deviceListNotifier.setConnectedDevices(tempConnectedDevices);
-    deviceListNotifier.setHistoryDevices(
-        dbDevices.map((device) => DeviceInfo.fromDevice(device)).toList());
+    deviceListNotifier.setHistoryDevices(dbDevices);
+  }
 
-    var selectedDevice = ref.read(selectedDeviceProvider);
-    if (selectedDevice != null) {
-      var idx = deviceListNotifier.connectedDevices
-          .indexWhere((ele) => ele.serialNumber == selectedDevice.serialNumber);
-      if (idx != -1) {
-        ref.read(selectedDeviceProvider.notifier).state =
-            deviceListNotifier.connectedDevices[idx];
-      }
-    }
-
+  void _updateDbDevices(List<DeviceInfo> tempConnectedDevices) async {
+    var dbDevices = await Db.getSavedAdbDevice();
     for (var onlineDevice in tempConnectedDevices) {
       var idx = dbDevices
           .indexWhere((ele) => ele.serialNumber == onlineDevice.serialNumber);
@@ -83,6 +71,28 @@ class _MainPageState extends ConsumerState<MainPage> {
       }
     }
     Db.saveAdbDevice(dbDevices);
+    deviceListNotifier.setHistoryDevices(dbDevices);
+  }
+
+  // show connected devices
+  Future<void> showConnectedDevices({
+    bool printOutput = true,
+  }) async {
+    List<DeviceInfo> tempConnectedDevices =
+        await ADBUtils.devices(printOutput: printOutput);
+    deviceListNotifier.setConnectedDevices(tempConnectedDevices);
+
+    var selectedDevice = ref.read(selectedDeviceProvider);
+    if (selectedDevice != null) {
+      var idx = deviceListNotifier.connectedDevices
+          .indexWhere((ele) => ele.serialNumber == selectedDevice.serialNumber);
+      if (idx != -1) {
+        ref.read(selectedDeviceProvider.notifier).state =
+            deviceListNotifier.connectedDevices[idx];
+      }
+    }
+
+    _updateDbDevices(tempConnectedDevices);
   }
 
   // connect to device and save ip address and port to isar
