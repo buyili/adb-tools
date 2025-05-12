@@ -9,14 +9,10 @@ import '../../utils/adb_utils.dart';
 import 'device_list_tile.dart';
 
 class DeviceList extends ConsumerStatefulWidget {
-  final Function(DeviceInfo) onConnect;
-  final Function(DeviceInfo) onDisconnect;
   final Function(DeviceInfo) onGetIpAndConnect;
 
   const DeviceList({
     super.key,
-    required this.onConnect,
-    required this.onDisconnect,
     required this.onGetIpAndConnect,
   });
 
@@ -38,6 +34,21 @@ class _DeviceListState extends ConsumerState<DeviceList> {
     }
     ref.read(selectedDeviceProvider.notifier).state =
         selectedDevice.serialNumber == device.serialNumber ? null : device;
+  }
+
+  // connect to device by host and port
+  void _onConnect(DeviceInfo device) async {
+    await ADBUtils.connect(device.serialNumber);
+    refreshDeviceList(ref);
+  }
+
+  // disconnect device on TCP/IP
+  void _onDisconnect(DeviceInfo device) async {
+    var success = await ADBUtils.disconnect(device.serialNumber);
+    if (success && device == ref.watch(selectedDeviceProvider)) {
+      ref.read(selectedDeviceProvider.notifier).state = null;
+    }
+    refreshDeviceList(ref);
   }
 
   // delete device from isar
@@ -80,10 +91,10 @@ class _DeviceListState extends ConsumerState<DeviceList> {
               onOpenTcpipPort(deviceItem);
             },
             onConnect: () {
-              widget.onConnect(deviceItem);
+              _onConnect(deviceItem);
             },
             onDisconnect: () {
-              widget.onDisconnect(deviceItem);
+              _onDisconnect(deviceItem);
             },
             onDelete: () {
               _onDelete(deviceItem);

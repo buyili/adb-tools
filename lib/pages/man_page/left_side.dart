@@ -1,12 +1,12 @@
 import 'package:adb_tools/db/db.dart';
 import 'package:adb_tools/models/device.dart';
-import 'package:adb_tools/providers/device_list_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:adb_tools/pages/man_page/left_side/top_form.dart';
-import 'package:adb_tools/utils/adb_utils.dart';
-import 'package:flutter/material.dart';
 import 'package:adb_tools/pages/man_page/apk_drop_target.dart';
 import 'package:adb_tools/pages/man_page/device_list.dart';
+import 'package:adb_tools/pages/man_page/left_side/top_form.dart';
+import 'package:adb_tools/providers/device_list_provider.dart';
+import 'package:adb_tools/utils/adb_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LeftSide extends ConsumerStatefulWidget {
   const LeftSide({super.key});
@@ -61,12 +61,6 @@ class _LeftSideState extends ConsumerState<LeftSide> {
     await ADBUtils.openTcpipPort(device.serialNumber);
   }
 
-  // connect to device by host and port
-  void onConnect(DeviceInfo device) async {
-    await ADBUtils.connect(device.serialNumber);
-    await showConnectedDevices();
-  }
-
   // get device ip and connect
   void onGetIpAndConnect(DeviceInfo device) async {
     // check tcpip opened
@@ -108,15 +102,6 @@ class _LeftSideState extends ConsumerState<LeftSide> {
     await showConnectedDevices();
   }
 
-  // disconnect device on TCP/IP
-  void onDisconnect(DeviceInfo device) async {
-    var success = await ADBUtils.disconnect(device.serialNumber);
-    if (success && device == ref.watch(selectedDeviceProvider)) {
-      ref.read(selectedDeviceProvider.notifier).state = null;
-    }
-    await showConnectedDevices();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -134,8 +119,6 @@ class _LeftSideState extends ConsumerState<LeftSide> {
 
         // device list
         DeviceList(
-          onConnect: onConnect,
-          onDisconnect: onDisconnect,
           onGetIpAndConnect: onGetIpAndConnect,
         ),
 
