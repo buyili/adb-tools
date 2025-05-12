@@ -1,5 +1,6 @@
 import 'package:adb_tools/pages/man_page/clickable_text.dart';
 import 'package:adb_tools/pages/man_page/output_view.dart';
+import 'package:adb_tools/pages/man_page/right_side/scrcpy_option_form.dart';
 import 'package:adb_tools/providers/config_provider.dart';
 import 'package:adb_tools/providers/device_list_provider.dart';
 import 'package:adb_tools/providers/output_text_model.dart';
@@ -7,8 +8,6 @@ import 'package:adb_tools/models/command_example.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../components/divide_title.dart';
-import '../../components/my_checkbox.dart';
 import '../../db/db.dart';
 import '../../utils/adb_utils.dart';
 
@@ -85,69 +84,16 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
     await ADBUtils.runCmd('adb', args);
   }
 
-  Future<void> _toggleTurnOffDisplay(bool? value) async {
-    final config = ref.read(configScreenConfig)!;
-    final turnOffDisplay = config.deviceOptions.turnOffDisplay;
-
-    ref
-        .read(configScreenConfig.notifier)
-        .setDeviceConfig(turnOffDisplay: !turnOffDisplay);
-    Db.saveMainConfig(ref.read(configScreenConfig)!);
-  }
-
-  Future<void> _toggleShowTouches(bool? value) async {
-    final config = ref.read(configScreenConfig)!;
-    final showTouches = config.deviceOptions.showTouches;
-
-    ref
-        .read(configScreenConfig.notifier)
-        .setDeviceConfig(showTouches: !showTouches);
-    Db.saveMainConfig(ref.read(configScreenConfig)!);
-  }
-
-  Future<void> _toggleStayAwake(bool? value) async {
-    final config = ref.read(configScreenConfig)!;
-    final stayAwake = config.deviceOptions.stayAwake;
-
-    ref
-        .read(configScreenConfig.notifier)
-        .setDeviceConfig(stayAwake: !stayAwake);
-    Db.saveMainConfig(ref.read(configScreenConfig)!);
-  }
-
   void onClear() {
     ref.read(outputTextProvider).clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    final mainConfig = ref.watch(configScreenConfig);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const DivideTitle(title: "Scrcpy options:"),
-        Wrap(
-          direction: Axis.horizontal,
-          spacing: 12.0,
-          children: [
-            MyCheckbox(
-              value: mainConfig?.deviceOptions.turnOffDisplay ?? false,
-              onChanged: _toggleTurnOffDisplay,
-              child: const Text('Turn Screen Off'),
-            ),
-            MyCheckbox(
-              value: mainConfig?.deviceOptions.showTouches ?? false,
-              onChanged: _toggleShowTouches,
-              child: const Text('Show Touches'),
-            ),
-            MyCheckbox(
-              value: mainConfig?.deviceOptions.stayAwake ?? false,
-              onChanged: _toggleStayAwake,
-              child: const Text('Stay Awake'),
-            ),
-          ],
-        ),
+        const ScrcpyOptionForm(),
         const SizedBox(height: 10.0),
         TextField(
           keyboardType: TextInputType.multiline,
