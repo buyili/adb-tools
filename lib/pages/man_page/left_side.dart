@@ -56,16 +56,6 @@ class _LeftSideState extends ConsumerState<LeftSide> {
     }
   }
 
-  void onSelect(DeviceInfo device) {
-    var selectedDevice = ref.read(selectedDeviceProvider);
-    if (selectedDevice == null) {
-      ref.read(selectedDeviceProvider.notifier).state = device;
-      return;
-    }
-    ref.read(selectedDeviceProvider.notifier).state =
-        selectedDevice.serialNumber == device.serialNumber ? null : device;
-  }
-
   // open port for use adb over Wi-Fi
   void onOpenTcpipPort(DeviceInfo device) async {
     await ADBUtils.openTcpipPort(device.serialNumber);
@@ -158,7 +148,6 @@ class _LeftSideState extends ConsumerState<LeftSide> {
 
         // device list
         DeviceList(
-          onSelect: onSelect,
           onConnect: onConnect,
           onDisconnect: onDisconnect,
           onDelete: onDelete,
