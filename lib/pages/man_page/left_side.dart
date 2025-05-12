@@ -17,7 +17,7 @@ class LeftSide extends ConsumerStatefulWidget {
 
 class _LeftSideState extends ConsumerState<LeftSide> {
   Future<void> showConnectedDevices() async {
-    refreshDeviceList(ref, printOutput: false);
+    refreshDeviceList(ref);
   }
 
   // connect to device and save ip address and port to isar
