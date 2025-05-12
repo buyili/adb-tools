@@ -17,9 +17,16 @@ class MyTextFormField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.grey),
+        labelText: hintText,
         border: const OutlineInputBorder(),
+        suffix: IconButton(
+          icon: const Icon(
+            Icons.close,
+          ),
+          onPressed: () {
+            controller!.clear();
+          },
+        ),
       ),
       validator: validator,
     );

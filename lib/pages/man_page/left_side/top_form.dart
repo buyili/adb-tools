@@ -60,7 +60,7 @@ class _TopFormState extends State<TopForm> {
           children: [
             // in text field
             SizedBox(
-              width: 180,
+              width: 220,
               child: MyTextFormField(
                 controller: _ipController,
                 hintText: 'ip or ip:port',
@@ -83,7 +83,7 @@ class _TopFormState extends State<TopForm> {
 
             // port text field
             SizedBox(
-              width: 80,
+              width: 120,
               child: MyTextFormField(
                 controller: _portController,
                 hintText: defaultPort,
@@ -93,21 +93,23 @@ class _TopFormState extends State<TopForm> {
             const SizedBox(width: 10.0),
 
             // connect button
-            FilledButton.tonal(
+            FilledButton.icon(
               onPressed: () {
                 _toggleConnect();
               },
-              child: const Text('Connect'),
+              icon: const Icon(Icons.link),
+              label: const Text('Connect'),
             ),
 
             const SizedBox(width: 10.0),
 
             // save button
-            FilledButton(
+            FilledButton.icon(
               onPressed: () {
                 _toggleSave();
               },
-              child: const Text('Save'),
+              icon: const Icon(Icons.save),
+              label: const Text('Save'),
             ),
           ],
         ),
