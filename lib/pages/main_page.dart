@@ -15,7 +15,6 @@ class MainPage extends ConsumerStatefulWidget {
 }
 
 class _MainPageState extends ConsumerState<MainPage> {
-
   @override
   void initState() {
     _init();
@@ -48,7 +47,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                 flex: 8,
                 child: LeftSide(),
               ),
-
+              SizedBox(width: 16.0),
               // right side
               Flexible(
                 flex: 5,

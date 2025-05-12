@@ -8,7 +8,6 @@ import '../../providers/device_list_provider.dart';
 import '../../utils/adb_utils.dart';
 
 class ApkDragTarget extends ConsumerStatefulWidget {
-
   const ApkDragTarget({
     super.key,
   });
@@ -47,8 +46,7 @@ class _ApkDragTargetState extends ConsumerState<ApkDragTarget> {
   Widget build(BuildContext context) {
     var selectedDevice = ref.watch(selectedDeviceProvider);
     var isSelectedDevice = (selectedDevice != null);
-    var isSelectedDeviceAndFiles =
-        (selectedDevice != null && list.isNotEmpty);
+    var isSelectedDeviceAndFiles = (selectedDevice != null && list.isNotEmpty);
 
     return DropTarget(
       onDragDone: (detail) {
@@ -79,104 +77,99 @@ class _ApkDragTargetState extends ConsumerState<ApkDragTarget> {
           _dragging = false;
         });
       },
-      child: Container(
-        margin: const EdgeInsets.only(right: 16),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Selected device:",
-                    ),
-                    Text(
-                      selectedDevice?.serialNumber ?? "None",
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    const SizedBox(width: 10),
-                    FilledButton(
-                      onPressed: isSelectedDevice ? _toggleStartShizuku : null,
-                      child: const Text("Start Shizuku"),
-                    ),
-                    const SizedBox(width: 10),
-                    FilledButton(
-                      onPressed:
-                          isSelectedDeviceAndFiles ? _toggleInstall : null,
-                      child: const Text("Install"),
-                    ),
-                    const SizedBox(width: 10),
-                    FilledButton(
-                      onPressed:
-                          isSelectedDeviceAndFiles ? _togglePushFiles : null,
-                      child: const Text("Push"),
-                    ),
-                    const SizedBox(width: 16),
-                    FilledButton(
-                      onPressed:
-                          (list.isNotEmpty) ? _toggleClearAll : null,
-                      child: const Text("Clear All"),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Container(
-              height: 150,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey, width: 1),
-                borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-                color: _dragging
-                    ? Colors.black26
-                    : Theme.of(context).primaryColor.withValues(alpha: 0.1),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Selected device:",
+                  ),
+                  Text(
+                    selectedDevice?.serialNumber ?? "None",
+                  ),
+                ],
               ),
-              child: list.isEmpty
-                  ? const Center(
-                      child: Text("Drag and drop APK or other files here"))
-                  : ListView.builder(
-                      itemCount: list.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10.0, top: 8.0, right: 8),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.android),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(list[index].name),
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Colors.red,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          list.removeAt(index);
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+              Row(
+                children: [
+                  const SizedBox(width: 10),
+                  FilledButton(
+                    onPressed: isSelectedDevice ? _toggleStartShizuku : null,
+                    child: const Text("Start Shizuku"),
+                  ),
+                  const SizedBox(width: 10),
+                  FilledButton(
+                    onPressed: isSelectedDeviceAndFiles ? _toggleInstall : null,
+                    child: const Text("Install"),
+                  ),
+                  const SizedBox(width: 10),
+                  FilledButton(
+                    onPressed:
+                        isSelectedDeviceAndFiles ? _togglePushFiles : null,
+                    child: const Text("Push"),
+                  ),
+                  const SizedBox(width: 16),
+                  FilledButton(
+                    onPressed: (list.isNotEmpty) ? _toggleClearAll : null,
+                    child: const Text("Clear All"),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            height: 150,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey, width: 1),
+              borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+              color: _dragging
+                  ? Colors.black26
+                  : Theme.of(context).primaryColor.withValues(alpha: 0.1),
             ),
-          ],
-        ),
+            child: list.isEmpty
+                ? const Center(
+                    child: Text("Drag and drop APK or other files here"))
+                : ListView.builder(
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                            left: 10.0, top: 8.0, right: 8),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.android),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(list[index].name),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        list.removeAt(index);
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }

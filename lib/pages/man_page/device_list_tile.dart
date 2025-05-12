@@ -68,7 +68,7 @@ class DeviceListTile extends ConsumerWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(right: 16.0, top: 8.0),
+      padding: const EdgeInsets.only(top: 8.0),
       child: MouseRegion(
         cursor: device.connected ? SystemMouseCursors.click : MouseCursor.defer,
         child: GestureDetector(
