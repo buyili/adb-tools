@@ -53,7 +53,7 @@ class ADBUtils {
 
   static Future<List<DeviceInfo>> devices({
     bool printOutput = true,
-}) async {
+  }) async {
     /// Run any commands
     var cmd = 'adb devices -l';
 
@@ -172,23 +172,27 @@ class ADBUtils {
   }
 
   static openTcpipPort(String serialNumber) async {
-    var cmd = 'adb -s $serialNumber tcpip 5555';
-    await runCmd(cmd, []);
+    var argsText = '-s $serialNumber tcpip 5555';
+    await runCmd('adb', argsText.split(" "));
 
     cmdPlus.close();
   }
 
   static Future<bool> checkTcpipOpened(String serialNumber) async {
-    var cmd = 'adb -s $serialNumber shell getprop service.adb.tcp.port';
-    var result = await runCmd(cmd, []);
+    return (await getTcpipPort(serialNumber)).isNotEmpty;
+  }
+
+  static Future<String> getTcpipPort(String serialNumber) async {
+    var argsText = '-s $serialNumber shell getprop service.adb.tcp.port';
+    var result = await runCmd('adb', argsText.split(" "));
 
     cmdPlus.close();
-    return RegExp(r'\d+').hasMatch(result.output);
+    return RegExp(r'\d+').hasMatch(result.output) ? result.output.trim() : '';
   }
 
   static Future<String> getDeviceIp(String serialNumber) async {
-    var cmd = 'adb -s $serialNumber shell ip addr show wlan0';
-    final result = await runCmd(cmd, []);
+    var argsText = '-s $serialNumber shell ip addr show wlan0';
+    final result = await runCmd('adb', argsText.split(" "));
 
     if (result.error.isNotEmpty) {
       return "";

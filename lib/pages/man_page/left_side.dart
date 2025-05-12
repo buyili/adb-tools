@@ -64,8 +64,8 @@ class _LeftSideState extends ConsumerState<LeftSide> {
   // get device ip and connect
   void onGetIpAndConnect(DeviceInfo device) async {
     // check tcpip opened
-    var tcpipOpened = await ADBUtils.checkTcpipOpened(device.serialNumber);
-    if (!tcpipOpened) {
+    var tcpipPort = await ADBUtils.getTcpipPort(device.serialNumber);
+    if (tcpipPort.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please open tcpip port first.')),
@@ -98,7 +98,7 @@ class _LeftSideState extends ConsumerState<LeftSide> {
     }
 
     await ADBUtils.connect(ip);
-    onSaveDeviceIPAddressToDB(ip, "5555", showExistsSnackBar: false);
+    onSaveDeviceIPAddressToDB(ip, tcpipPort, showExistsSnackBar: false);
     await showConnectedDevices();
   }
 
