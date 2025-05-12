@@ -2,7 +2,6 @@ import 'package:adb_tools/db/db.dart';
 import 'package:adb_tools/models/scrcpy_related/scrcpy_config.dart';
 import 'package:adb_tools/providers/config_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:adb_tools/components/divide_title.dart';
 import 'package:adb_tools/components/my_checkbox.dart';
 import 'package:flutter/material.dart';
 
