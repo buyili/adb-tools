@@ -4,7 +4,6 @@ import 'package:window_manager/window_manager.dart';
 
 import 'pages/main_page.dart';
 
-
 Future<void> main() async {
   // Try to resize and reposition the window to be half the width and height
   // of its screen, centered horizontally and shifted up from center.
@@ -36,7 +35,6 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorSchemeSeed: Colors.green,
-        useMaterial3: true,
       ),
       home: const MainPage(),
     );
