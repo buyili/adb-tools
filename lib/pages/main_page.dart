@@ -227,6 +227,11 @@ class _MainPageState extends ConsumerState<MainPage> {
                       onSave: onSaveDeviceIPAddressToDB,
                     ),
 
+                    const SizedBox(height: 10.0),
+                    const Divider(
+                      height: 1,
+                    ),
+
                     // device list
                     DeviceList(
                       onSelect: onSelect,
@@ -235,6 +240,8 @@ class _MainPageState extends ConsumerState<MainPage> {
                       onDelete: onDelete,
                       onGetIpAndConnect: onGetIpAndConnect,
                     ),
+
+                    const SizedBox(height: 10.0),
 
                     const ApkDragTarget(),
                   ],

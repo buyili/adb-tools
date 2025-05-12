@@ -34,42 +34,39 @@ class DeviceList extends ConsumerWidget {
     DeviceInfo? selectedDevice = ref.watch(selectedDeviceProvider);
 
     return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24.0),
-        child: ListView.builder(
-          itemCount: devices.length,
-          itemBuilder: (context, index) {
-            var deviceItem = devices[index];
-            if (deviceItem.isTitle) {
-              return DivideTitle(
-                title: deviceItem.name!,
-              );
-            }
-            return DeviceListTile(
-              device: deviceItem,
-              isSelected: selectedDevice != null &&
-                  selectedDevice.serialNumber == deviceItem.serialNumber,
-              onTap: () {
-                onSelect(deviceItem);
-              },
-              onOpenTcpipPort: () {
-                onOpenTcpipPort(deviceItem);
-              },
-              onConnect: () {
-                onConnect(deviceItem);
-              },
-              onDisconnect: () {
-                onDisconnect(deviceItem);
-              },
-              onDelete: () {
-                onDelete(deviceItem);
-              },
-              onGetIpAndConnect: () {
-                onGetIpAndConnect(deviceItem);
-              },
+      child: ListView.builder(
+        itemCount: devices.length,
+        itemBuilder: (context, index) {
+          var deviceItem = devices[index];
+          if (deviceItem.isTitle) {
+            return DivideTitle(
+              title: deviceItem.name!,
             );
-          },
-        ),
+          }
+          return DeviceListTile(
+            device: deviceItem,
+            isSelected: selectedDevice != null &&
+                selectedDevice.serialNumber == deviceItem.serialNumber,
+            onTap: () {
+              onSelect(deviceItem);
+            },
+            onOpenTcpipPort: () {
+              onOpenTcpipPort(deviceItem);
+            },
+            onConnect: () {
+              onConnect(deviceItem);
+            },
+            onDisconnect: () {
+              onDisconnect(deviceItem);
+            },
+            onDelete: () {
+              onDelete(deviceItem);
+            },
+            onGetIpAndConnect: () {
+              onGetIpAndConnect(deviceItem);
+            },
+          );
+        },
       ),
     );
   }
