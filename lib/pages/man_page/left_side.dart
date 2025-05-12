@@ -117,20 +117,6 @@ class _LeftSideState extends ConsumerState<LeftSide> {
     await showConnectedDevices();
   }
 
-  // delete device from isar
-  void onDelete(Device device) {
-    showDeleteDialog(
-      context,
-      'Delete Device',
-      'Are you sure you want to delete ${device.serialNumber}?',
-      () {
-        final deviceListNotifier = ref.read(deviceListNotifierProvider);
-        deviceListNotifier.removeHistoryDeviceById(device.serialNumber);
-        Db.saveAdbDevice(deviceListNotifier.historyDevices);
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -150,7 +136,6 @@ class _LeftSideState extends ConsumerState<LeftSide> {
         DeviceList(
           onConnect: onConnect,
           onDisconnect: onDisconnect,
-          onDelete: onDelete,
           onGetIpAndConnect: onGetIpAndConnect,
         ),
 
@@ -160,36 +145,4 @@ class _LeftSideState extends ConsumerState<LeftSide> {
       ],
     );
   }
-}
-
-Future<dynamic> showDeleteDialog(
-  BuildContext context,
-  String title,
-  String message,
-  void Function()? onPressed,
-) {
-  return showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              onPressed!();
-              Navigator.of(context).pop();
-            },
-            child: const Text('Delete'),
-          ),
-        ],
-      );
-    },
-  );
 }

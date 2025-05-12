@@ -1,3 +1,4 @@
+import 'package:adb_tools/db/db.dart';
 import 'package:adb_tools/models/device.dart';
 import 'package:adb_tools/providers/device_list_provider.dart';
 import 'package:flutter/material.dart';
@@ -10,14 +11,12 @@ import 'device_list_tile.dart';
 class DeviceList extends ConsumerStatefulWidget {
   final Function(DeviceInfo) onConnect;
   final Function(DeviceInfo) onDisconnect;
-  final Function(DeviceInfo) onDelete;
   final Function(DeviceInfo) onGetIpAndConnect;
 
   const DeviceList({
     super.key,
     required this.onConnect,
     required this.onDisconnect,
-    required this.onDelete,
     required this.onGetIpAndConnect,
   });
 
@@ -39,6 +38,20 @@ class _DeviceListState extends ConsumerState<DeviceList> {
     }
     ref.read(selectedDeviceProvider.notifier).state =
         selectedDevice.serialNumber == device.serialNumber ? null : device;
+  }
+
+  // delete device from isar
+  void _onDelete(Device device) {
+    showDeleteDialog(
+      context,
+      'Delete Device',
+      'Are you sure you want to delete ${device.serialNumber}?',
+      () {
+        final deviceListNotifier = ref.read(deviceListNotifierProvider);
+        deviceListNotifier.removeHistoryDeviceById(device.serialNumber);
+        Db.saveAdbDevice(deviceListNotifier.historyDevices);
+      },
+    );
   }
 
   @override
@@ -73,7 +86,7 @@ class _DeviceListState extends ConsumerState<DeviceList> {
               widget.onDisconnect(deviceItem);
             },
             onDelete: () {
-              widget.onDelete(deviceItem);
+              _onDelete(deviceItem);
             },
             onGetIpAndConnect: () {
               widget.onGetIpAndConnect(deviceItem);
@@ -83,4 +96,36 @@ class _DeviceListState extends ConsumerState<DeviceList> {
       ),
     );
   }
+}
+
+Future<dynamic> showDeleteDialog(
+  BuildContext context,
+  String title,
+  String message,
+  void Function()? onPressed,
+) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              onPressed!();
+              Navigator.of(context).pop();
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      );
+    },
+  );
 }
