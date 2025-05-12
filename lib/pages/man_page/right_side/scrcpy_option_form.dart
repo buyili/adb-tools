@@ -5,16 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:adb_tools/components/my_checkbox.dart';
 import 'package:flutter/material.dart';
 
-class _DropdownItem {
+class DropdownOption {
   final int value;
   final String label;
 
-  _DropdownItem({required this.value, required this.label});
+  DropdownOption({required this.value, required this.label});
 }
-
-final _dropdownItems = [1, 5, 8, 10, 20, 30, 40, 50, 80, 100]
-    .map((bitrate) => _DropdownItem(value: bitrate, label: '${bitrate}Mbps'))
-    .toList();
 
 class ScrcpyOptionForm extends ConsumerStatefulWidget {
   const ScrcpyOptionForm({super.key});
@@ -24,6 +20,10 @@ class ScrcpyOptionForm extends ConsumerStatefulWidget {
 }
 
 class _ScrcpyOptionFormState extends ConsumerState<ScrcpyOptionForm> {
+  final _dropdownItems = [1, 5, 8, 10, 20, 30, 40, 50, 80, 100]
+      .map((bitrate) => DropdownOption(value: bitrate, label: '${bitrate}Mbps'))
+      .toList();
+
   @override
   Widget build(BuildContext context) {
     final mainConfig = ref.watch(configScreenConfig);
@@ -117,7 +117,7 @@ class MySelect extends StatelessWidget {
     required this.label,
     required this.onChanged,
   });
-  final List<_DropdownItem> options;
+  final List<DropdownOption> options;
   final int value;
   final String label;
   final Function(int?) onChanged;
@@ -128,7 +128,7 @@ class MySelect extends StatelessWidget {
       width: 180,
       child: DropdownButtonFormField<int>(
         value: value,
-        items: options.map((_DropdownItem option) {
+        items: options.map((DropdownOption option) {
           return DropdownMenuItem<int>(
             value: option.value,
             child: Text(option.label),
