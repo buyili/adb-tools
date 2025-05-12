@@ -45,7 +45,9 @@ class _DeviceListState extends ConsumerState<DeviceList> {
   // disconnect device on TCP/IP
   void _onDisconnect(DeviceInfo device) async {
     var success = await ADBUtils.disconnect(device.serialNumber);
-    if (success && device == ref.watch(selectedDeviceProvider)) {
+    if (success &&
+        device.serialNumber ==
+            ref.watch(selectedDeviceProvider)?.serialNumber) {
       ref.read(selectedDeviceProvider.notifier).state = null;
     }
     refreshDeviceList(ref);
