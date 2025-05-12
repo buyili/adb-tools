@@ -22,11 +22,8 @@ final commandExamples = [
 
 /// right side widget
 class RightSideWidget extends ConsumerStatefulWidget {
-  final Function onShowDevices;
-
   const RightSideWidget({
     super.key,
-    required this.onShowDevices,
   });
 
   @override
@@ -46,6 +43,10 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
   void _loadPrefs() async {
     final savedMainConfig = await Db.getMainConfig();
     ref.read(configScreenConfig.notifier).setConfig(savedMainConfig);
+  }
+
+  void _toggleShowDevices() async {
+    refreshDeviceList(ref, printOutput: true);
   }
 
   Future<void> _toggleExecute(String text) async {
@@ -134,9 +135,7 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
             Row(
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    widget.onShowDevices();
-                  },
+                  onPressed: _toggleShowDevices,
                   child: const Text('Show Devices'),
                 ),
                 const SizedBox(width: 10.0),

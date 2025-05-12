@@ -1,3 +1,5 @@
+import 'package:adb_tools/db/db.dart';
+import 'package:adb_tools/utils/adb_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,7 +11,7 @@ class DeviceListNotifier extends ChangeNotifier {
   List<DeviceInfo> allDevices = [];
 
   void setHistoryDevices(List<Device> devices) {
-    if(devices.isEmpty){
+    if (devices.isEmpty) {
       historyDevices = [];
     } else {
       historyDevices = (devices[0] is DeviceInfo)
@@ -79,3 +81,72 @@ final deviceListNotifierProvider =
 final selectedDeviceProvider = StateProvider<DeviceInfo?>((ref) {
   return null;
 });
+
+// final deviceListProvider =
+//     FutureProvider.autoDispose.family<void, ({bool printOutput, int time})>(
+//   (ref, params) async {
+//     final deviceListNotifier = ref.read(deviceListNotifierProvider);
+//     List<DeviceInfo> tempConnectedDevices =
+//         await ADBUtils.devices(printOutput: params.printOutput);
+//     deviceListNotifier.setConnectedDevices(tempConnectedDevices);
+
+//     var selectedDevice = ref.read(selectedDeviceProvider);
+//     if (selectedDevice != null) {
+//       var idx = deviceListNotifier.connectedDevices
+//           .indexWhere((ele) => ele.serialNumber == selectedDevice.serialNumber);
+//       if (idx != -1) {
+//         ref.read(selectedDeviceProvider.notifier).state =
+//             deviceListNotifier.connectedDevices[idx];
+//       }
+//     }
+
+//     _updateDbDevices(ref, tempConnectedDevices);
+//   },
+// );
+
+void refreshDeviceList(WidgetRef ref, {bool printOutput = true}) async {
+  final deviceListNotifier = ref.read(deviceListNotifierProvider);
+  List<DeviceInfo> tempConnectedDevices =
+      await ADBUtils.devices(printOutput: printOutput);
+  deviceListNotifier.setConnectedDevices(tempConnectedDevices);
+
+  var selectedDevice = ref.read(selectedDeviceProvider);
+  if (selectedDevice != null) {
+    var idx = deviceListNotifier.connectedDevices
+        .indexWhere((ele) => ele.serialNumber == selectedDevice.serialNumber);
+    if (idx != -1) {
+      ref.read(selectedDeviceProvider.notifier).state =
+          deviceListNotifier.connectedDevices[idx];
+    }
+  }
+
+  _updateDbDevices(ref, tempConnectedDevices);
+}
+
+void _updateDbDevices(
+    WidgetRef ref, List<DeviceInfo> tempConnectedDevices) async {
+  var dbDevices = await Db.getSavedAdbDevice();
+  for (var onlineDevice in tempConnectedDevices) {
+    var idx = dbDevices
+        .indexWhere((ele) => ele.serialNumber == onlineDevice.serialNumber);
+
+    if (idx != -1) {
+      dbDevices[idx]
+        ..serialNumber = onlineDevice.serialNumber
+        ..product = onlineDevice.product
+        ..model = onlineDevice.model
+        ..device = onlineDevice.device
+        ..transportId = onlineDevice.transportId;
+    } else if (onlineDevice.wifi) {
+      var newDevice = Device()
+        ..serialNumber = onlineDevice.serialNumber
+        ..product = onlineDevice.product
+        ..model = onlineDevice.model
+        ..device = onlineDevice.device
+        ..transportId = onlineDevice.transportId;
+      dbDevices.add(newDevice);
+    }
+  }
+  Db.saveAdbDevice(dbDevices);
+  ref.read(deviceListNotifierProvider).setHistoryDevices(dbDevices);
+}

@@ -9,8 +9,7 @@ import 'package:adb_tools/pages/man_page/apk_drop_target.dart';
 import 'package:adb_tools/pages/man_page/device_list.dart';
 
 class LeftSide extends ConsumerStatefulWidget {
-  const LeftSide({required this.onShowDevices, super.key});
-  final Function onShowDevices;
+  const LeftSide({super.key});
 
   @override
   ConsumerState<LeftSide> createState() => _LeftSideState();
@@ -18,7 +17,7 @@ class LeftSide extends ConsumerStatefulWidget {
 
 class _LeftSideState extends ConsumerState<LeftSide> {
   Future<void> showConnectedDevices() async {
-    await widget.onShowDevices();
+    refreshDeviceList(ref, printOutput: false);
   }
 
   // connect to device and save ip address and port to isar
