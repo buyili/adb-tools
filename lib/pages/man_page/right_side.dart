@@ -65,7 +65,7 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
       args = ['-s', selectedDevice.serialNumber, ...args];
     }
 
-    await ADBUtils.runCmd('adb', args);
+    await ADBUtils.runCmd(args);
   }
 
   // execute example command
@@ -82,7 +82,7 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
       args = ['-s', selectedDevice.serialNumber, ...args];
     }
 
-    await ADBUtils.runCmd('adb', args);
+    await ADBUtils.runCmd(args);
   }
 
   void onClear() {

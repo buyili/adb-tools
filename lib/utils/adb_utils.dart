@@ -13,9 +13,9 @@ class ADBUtils {
   static const workingDirectory = bool.fromEnvironment('dart.vm.product')
       ? './data/flutter_assets/assets/adb-win'
       : './assets/adb-win';
+  static const cmd = 'adb';
 
   static Future<CmdPlusResult> runCmd(
-    String cmd,
     List<String> args, {
     ArgsSerializeCallback? argsSerialize,
     bool printOutput = true,
@@ -55,9 +55,9 @@ class ADBUtils {
     bool printOutput = true,
   }) async {
     /// Run any commands
-    var cmd = 'adb devices -l';
+    var argsText = 'devices -l';
 
-    final result = await runCmd(cmd, [], printOutput: printOutput);
+    final result = await runCmd(argsText.split(" "), printOutput: printOutput);
 
     List<DeviceInfo> devices = [];
     if (result.error.isEmpty) {
@@ -88,8 +88,8 @@ class ADBUtils {
 
   // connect to a device
   static Future<bool> connect(String host) async {
-    var cmd = 'adb connect $host';
-    final result = await runCmd(cmd, []);
+    var argsText = 'connect $host';
+    final result = await runCmd(argsText.split(" "));
 
     cmdPlus.close();
 
@@ -98,8 +98,8 @@ class ADBUtils {
 
   /// disconnect from a device
   static Future<bool> disconnect(String host) async {
-    var cmd = 'adb disconnect $host';
-    final result = await runCmd(cmd, []);
+    var argsText = 'disconnect $host';
+    final result = await runCmd(argsText.split(" "));
 
     cmdPlus.close();
 
@@ -120,7 +120,7 @@ class ADBUtils {
         '-r',
         apkFile.path
       ];
-      await runCmd('adb', args, argsSerialize: (args) {
+      await runCmd(args, argsSerialize: (args) {
         return args
             .asMap()
             .entries
@@ -154,7 +154,7 @@ class ADBUtils {
         '/sdcard/${apkFile.name}'
       ];
 
-      await runCmd('adb', args, argsSerialize: (args) {
+      await runCmd(args, argsSerialize: (args) {
         return args
             .asMap()
             .entries
@@ -173,7 +173,7 @@ class ADBUtils {
 
   static openTcpipPort(String serialNumber) async {
     var argsText = '-s $serialNumber tcpip 5555';
-    await runCmd('adb', argsText.split(" "));
+    await runCmd(argsText.split(" "));
 
     cmdPlus.close();
   }
@@ -184,7 +184,7 @@ class ADBUtils {
 
   static Future<String> getTcpipPort(String serialNumber) async {
     var argsText = '-s $serialNumber shell getprop service.adb.tcp.port';
-    var result = await runCmd('adb', argsText.split(" "));
+    var result = await runCmd(argsText.split(" "));
 
     cmdPlus.close();
     return RegExp(r'\d+').hasMatch(result.output) ? result.output.trim() : '';
@@ -192,7 +192,7 @@ class ADBUtils {
 
   static Future<String> getDeviceIp(String serialNumber) async {
     var argsText = '-s $serialNumber shell ip addr show wlan0';
-    final result = await runCmd('adb', argsText.split(" "));
+    final result = await runCmd(argsText.split(" "));
 
     if (result.error.isNotEmpty) {
       return "";
@@ -211,8 +211,8 @@ class ADBUtils {
   }
 
   static void startShizuku(String serialNumber) {
-    var cmd =
-        'adb -s $serialNumber shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh';
-    runCmd(cmd, []);
+    var argsText =
+        '-s $serialNumber shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh';
+    runCmd(argsText.split(" "));
   }
 }
