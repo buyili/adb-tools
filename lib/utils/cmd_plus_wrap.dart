@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cmd_plus/cmd_plus.dart';
+// ignore: depend_on_referenced_packages
 import 'package:io/ansi.dart' as ansi;
 
 /// A wrapper around [CmdPlus] to override the output encoding.
