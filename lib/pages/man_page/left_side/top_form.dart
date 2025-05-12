@@ -54,7 +54,6 @@ class _TopFormState extends State<TopForm> {
     return Form(
       key: _formKey,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // in text field
           SizedBox(
