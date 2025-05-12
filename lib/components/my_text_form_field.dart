@@ -19,7 +19,7 @@ class MyTextFormField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: hintText,
         border: const OutlineInputBorder(),
-        suffix: IconButton(
+        suffixIcon: IconButton(
           icon: const Icon(
             Icons.close,
           ),
