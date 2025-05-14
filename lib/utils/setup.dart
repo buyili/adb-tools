@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:adb_tools/providers/app_provider.dart';
 import 'package:adb_tools/utils/const.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SteupUtils {
   static final String _appPath = Platform.resolvedExecutable;
