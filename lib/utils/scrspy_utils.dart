@@ -2,16 +2,12 @@ import 'dart:convert';
 
 import 'package:adb_tools/models/scrcpy_related/scrcpy_config.dart';
 import 'package:adb_tools/models/cmd_task.dart';
+import 'package:adb_tools/providers/app_provider.dart';
 import 'package:process_run/process_run.dart';
 
 import '../providers/output_text_model.dart';
-import 'cmd_plus_wrap.dart';
 
 class ScrcpyUtils {
-  static final cmdPlus = CmdPlusWrap();
-  static const workingDirectory = bool.fromEnvironment('dart.vm.product')
-      ? './data/flutter_assets/assets/scrcpy-win64'
-      : './assets/scrcpy-win64';
   static const String cmd = "scrcpy";
 
   static Future<void> run(String script) async {
@@ -22,7 +18,7 @@ class ScrcpyUtils {
 
     var controller = ShellLinesController();
     var shell = Shell(
-        workingDirectory: workingDirectory,
+        workingDirectory: workDir,
         stdoutEncoding: utf8,
         stderrEncoding: utf8,
         stdout: controller.sink,
@@ -49,6 +45,7 @@ class ScrcpyUtils {
     final turnScreenOff = config.deviceOptions.turnOffDisplay;
     final showTouches = config.deviceOptions.showTouches;
     final stayAwake = config.deviceOptions.stayAwake;
-    await run("$cmd -s $serial ${turnScreenOff ? '-S' : ''} ${showTouches ? '--show-touches' : ''} ${stayAwake ? '--stay-awake' : ''}");
+    await run(
+        "$cmd -s $serial ${turnScreenOff ? '-S' : ''} ${showTouches ? '--show-touches' : ''} ${stayAwake ? '--stay-awake' : ''}");
   }
 }

@@ -7,6 +7,7 @@ import 'package:adb_tools/models/scrcpy_related/scrcpy_config/audio_options.dart
 import 'package:adb_tools/models/scrcpy_related/scrcpy_config/device_options.dart';
 import 'package:adb_tools/models/scrcpy_related/scrcpy_config/video_options.dart';
 import 'package:adb_tools/models/scrcpy_related/scrcpy_config/window_options.dart';
+import 'package:logger/logger.dart';
 
 import '../models/scrcpy_related/scrcpy_config.dart';
 import '../models/scrcpy_related/scrcpy_enum.dart';
@@ -194,11 +195,11 @@ const scrcpyLatestUrl =
 const eadb = './adb';
 const escrcpy = './scrcpy';
 
-// final logger = Logger(
-//   filter: ProductionFilter(),
-//   printer: SimplePrinter(),
-//   output: null,
-// );
+final logger = Logger(
+  filter: ProductionFilter(),
+  printer: SimplePrinter(),
+  output: null,
+);
 
 final shellEnv = {
   'ADB': './adb',
@@ -210,3 +211,11 @@ const String adbMdns = '_adb-tls-connect._tcp';
 const String adbPairMdns = '_adb-tls-pairing._tcp';
 
 const String DEFAULT = 'default';
+
+final shellPathName = switch (Platform.operatingSystem) {
+  'windows' => 'win',
+  'linux' => 'linux',
+  'macos' => 'mac-aa',
+  _ =>
+    throw UnsupportedError('Unsupported platform: ${Platform.operatingSystem}'),
+};

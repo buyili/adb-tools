@@ -1,4 +1,5 @@
 import 'package:adb_tools/models/device.dart';
+import 'package:adb_tools/providers/app_provider.dart';
 import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:adb_tools/utils/cmd_plus_wrap.dart';
 import 'package:cmd_plus/cmd_plus.dart';
@@ -10,9 +11,6 @@ typedef ArgsSerializeCallback = String Function(List<String> args);
 
 class ADBUtils {
   static final cmdPlus = CmdPlusWrap();
-  static const workingDirectory = bool.fromEnvironment('dart.vm.product')
-      ? './data/flutter_assets/assets/adb-win'
-      : './assets/adb-win';
   static const cmd = 'adb';
 
   static Future<CmdPlusResult> runCmd(
@@ -39,7 +37,7 @@ class ADBUtils {
       /// the output.
       mode: const CmdPlusMode.detached(),
       throwOnError: false,
-      workingDirectory: workingDirectory,
+      workingDirectory: workDir,
     );
 
     if (printOutput) {
