@@ -35,17 +35,28 @@ class ScrcpyUtils {
       await shell.run(script);
 
       notifier.updateTaskStatus(taskIndex, CmdTaskStatus.success);
-    } on ShellException catch (_) {
+    } catch (_) {
       // We might get a shell exception
       notifier.updateTaskStatus(taskIndex, CmdTaskStatus.failure);
     }
+    shell.kill();
+    controller.close();
   }
 
   static Future<void> start(String serial, ScrcpyConfig config) async {
     final turnScreenOff = config.deviceOptions.turnOffDisplay;
     final showTouches = config.deviceOptions.showTouches;
     final stayAwake = config.deviceOptions.stayAwake;
-    await run(
-        "$cmd -s $serial ${turnScreenOff ? '-S' : ''} ${showTouches ? '--show-touches' : ''} ${stayAwake ? '--stay-awake' : ''}");
+    final videoBitrate = config.videoOptions.videoBitrate;
+    await run([
+      cmd,
+      '-s',
+      serial,
+      turnScreenOff ? '-S' : '',
+      showTouches ? '--show-touches' : '',
+      stayAwake ? '--stay-awake' : '',
+      '-b',
+      '${videoBitrate}M',
+    ].join(' '));
   }
 }
