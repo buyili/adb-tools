@@ -103,7 +103,9 @@ void refreshDeviceList(WidgetRef ref, {bool printOutput = true}) async {
 
 void _updateDbDevices(
     WidgetRef ref, List<DeviceInfo> tempConnectedDevices) async {
+  if (tempConnectedDevices.isEmpty) return;
   var dbDevices = await Db.getSavedAdbDevice();
+  bool needUpdate = false;
   for (var onlineDevice in tempConnectedDevices) {
     var idx = dbDevices
         .indexWhere((ele) => ele.serialNumber == onlineDevice.serialNumber);
@@ -115,6 +117,7 @@ void _updateDbDevices(
         ..model = onlineDevice.model
         ..device = onlineDevice.device
         ..transportId = onlineDevice.transportId;
+      needUpdate = true;
     } else if (onlineDevice.wifi) {
       var newDevice = Device()
         ..serialNumber = onlineDevice.serialNumber
@@ -123,8 +126,10 @@ void _updateDbDevices(
         ..device = onlineDevice.device
         ..transportId = onlineDevice.transportId;
       dbDevices.add(newDevice);
+      needUpdate = true;
     }
   }
+  if (!needUpdate) return;
   Db.saveAdbDevice(dbDevices);
   ref.read(deviceListNotifierProvider).setHistoryDevices(dbDevices);
 }
