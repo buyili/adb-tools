@@ -1,5 +1,5 @@
-import 'package:adb_tools/pages/man_page/clickable_text.dart';
-import 'package:adb_tools/pages/man_page/output_view.dart';
+import 'package:adb_tools/pages/man_page/right_side/clickable_text.dart';
+import 'package:adb_tools/pages/man_page/right_side/output_view.dart';
 import 'package:adb_tools/pages/man_page/right_side/scrcpy_option_form.dart';
 import 'package:adb_tools/providers/config_provider.dart';
 import 'package:adb_tools/providers/device_list_provider.dart';

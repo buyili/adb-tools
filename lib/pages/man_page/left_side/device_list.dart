@@ -4,8 +4,8 @@ import 'package:adb_tools/providers/device_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../components/divide_title.dart';
-import '../../utils/adb_utils.dart';
+import '../../../components/divide_title.dart';
+import '../../../utils/adb_utils.dart';
 import 'device_list_tile.dart';
 
 class DeviceList extends ConsumerStatefulWidget {

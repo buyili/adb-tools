@@ -1,7 +1,7 @@
 import 'package:adb_tools/db/db.dart';
 import 'package:adb_tools/models/device.dart';
-import 'package:adb_tools/pages/man_page/apk_drop_target.dart';
-import 'package:adb_tools/pages/man_page/device_list.dart';
+import 'package:adb_tools/pages/man_page/left_side/apk_drop_target.dart';
+import 'package:adb_tools/pages/man_page/left_side/device_list.dart';
 import 'package:adb_tools/pages/man_page/left_side/top_form.dart';
 import 'package:adb_tools/providers/device_list_provider.dart';
 import 'package:adb_tools/utils/adb_utils.dart';

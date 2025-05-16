@@ -82,28 +82,6 @@ final selectedDeviceProvider = StateProvider<DeviceInfo?>((ref) {
   return null;
 });
 
-// final deviceListProvider =
-//     FutureProvider.autoDispose.family<void, ({bool printOutput, int time})>(
-//   (ref, params) async {
-//     final deviceListNotifier = ref.read(deviceListNotifierProvider);
-//     List<DeviceInfo> tempConnectedDevices =
-//         await ADBUtils.devices(printOutput: params.printOutput);
-//     deviceListNotifier.setConnectedDevices(tempConnectedDevices);
-
-//     var selectedDevice = ref.read(selectedDeviceProvider);
-//     if (selectedDevice != null) {
-//       var idx = deviceListNotifier.connectedDevices
-//           .indexWhere((ele) => ele.serialNumber == selectedDevice.serialNumber);
-//       if (idx != -1) {
-//         ref.read(selectedDeviceProvider.notifier).state =
-//             deviceListNotifier.connectedDevices[idx];
-//       }
-//     }
-
-//     _updateDbDevices(ref, tempConnectedDevices);
-//   },
-// );
-
 void refreshDeviceList(WidgetRef ref, {bool printOutput = true}) async {
   final deviceListNotifier = ref.read(deviceListNotifierProvider);
   List<DeviceInfo> tempConnectedDevices =

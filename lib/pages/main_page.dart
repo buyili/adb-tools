@@ -23,7 +23,7 @@ class _MainPageState extends ConsumerState<MainPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refreshDeviceList(ref, printOutput: false);
 
-      Timer.periodic(const Duration(minutes: 10), (timer) {
+      Timer.periodic(const Duration(seconds: 10), (timer) {
         refreshDeviceList(ref, printOutput: false);
       });
     });
