@@ -1,24 +1,19 @@
+import 'dart:convert';
+
 import 'package:adb_tools/pages/man_page/right_side/clickable_text.dart';
 import 'package:adb_tools/pages/man_page/right_side/output_view.dart';
+import 'package:adb_tools/pages/man_page/right_side/remaining_commands_tooltip.dart';
 import 'package:adb_tools/pages/man_page/right_side/scrcpy_option_form.dart';
 import 'package:adb_tools/providers/config_provider.dart';
 import 'package:adb_tools/providers/device_list_provider.dart';
 import 'package:adb_tools/providers/output_text_model.dart';
 import 'package:adb_tools/models/command_example.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../db/db.dart';
 import '../../utils/adb_utils.dart';
-
-final commandExamples = [
-  CommandExample('version', false),
-  CommandExample('devices', false),
-  CommandExample('devices -l', false),
-  CommandExample('shell wm size', true),
-  CommandExample('shell getprop service.adb.tcp.port', true),
-  CommandExample('shell ip addr show wlan0', true),
-];
 
 /// right side widget
 class RightSideWidget extends ConsumerStatefulWidget {
@@ -33,16 +28,39 @@ class RightSideWidget extends ConsumerStatefulWidget {
 class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
   final _textController = TextEditingController();
   bool turnScreenOff = false;
+  List<CommandExample> commandExamples = [];
 
   @override
   void initState() {
     super.initState();
     _loadPrefs();
+    _loadCommandExamples();
   }
 
   void _loadPrefs() async {
     final savedMainConfig = await Db.getMainConfig();
     ref.read(configScreenConfig.notifier).setConfig(savedMainConfig);
+  }
+
+  void _loadCommandExamples() async {
+    final jsonString =
+        await rootBundle.loadString("assets/command_examples.json");
+    List<CommandExample> list = (jsonDecode(jsonString) as List<dynamic>)
+        .map((json) => CommandExample.fromJson(json as Map<String, dynamic>))
+        .toList();
+    setState(() {
+      commandExamples = list;
+    });
+  }
+
+  void _refreshCommands() {
+    _loadCommandExamples();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Refreshing commands successfully!'),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   void _toggleShowDevices() async {
@@ -117,7 +135,8 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
             const Text('eg: '),
             Expanded(
               child: Wrap(children: [
-                for (final commandModel in commandExamples)
+                // 显示前四个命令示例
+                for (final commandModel in commandExamples.take(4))
                   ClickableText(
                     example: commandModel,
                     onTap: () {
@@ -125,7 +144,20 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
                     },
                   ),
               ]),
-            )
+            ),
+            // 如果命令示例数量超过四个，显示自定义组件
+            if (commandExamples.length > 4)
+              RemainingCommandsTooltip(
+                remainingCommands: commandExamples.skip(4).toList(),
+                onTap: _toggleEgCommand,
+              ),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              color: Theme.of(context).primaryColor,
+              onPressed: _refreshCommands, // 点击按钮时调用刷新方法
+              tooltip:
+                  'Refresh Commands List from assets/command_examples.json',
+            ),
           ],
         ),
         const SizedBox(height: 10.0),

@@ -1,0 +1,53 @@
+[{
+        "args": "version",
+        "needDevice": false
+    },
+    {
+        "args": "devices",
+        "needDevice": false
+    },
+    {
+        "args": "devices -l",
+        "needDevice": false
+    },
+    {
+        "args": "shell wm size",
+        "needDevice": true
+    },
+    {
+        "args": "shell wm density",
+        "needDevice": true
+    },
+    {
+        "args": "shell getprop service.adb.tcp.port",
+        "needDevice": true
+    },
+    {
+        "args": "shell ip addr show wlan0",
+        "needDevice": true
+    },
+    {
+        "args": "shell getprop ro.product.model",
+        "needDevice": true
+    },
+    {
+        "args": "shell getprop ro.product.manufacturer",
+        "needDevice": true
+    },
+    {
+        "args": "shell getprop ro.build.version.release",
+        "needDevice": true
+    },
+    {
+        "args": "shell getprop ro.build.version.sdk",
+        "needDevice": true
+    },
+    {
+        "args": "shell getprop ro.product.cpu.abi",
+        "needDevice": true
+    },
+    {
+        "args": "shell getprop ro.product.cpu.abilist",
+        "needDevice": true
+    }
+]
