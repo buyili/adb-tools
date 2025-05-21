@@ -90,12 +90,10 @@ void refreshDeviceList(WidgetRef ref, {bool printOutput = true}) async {
 
   var selectedDevice = ref.read(selectedDeviceProvider);
   if (selectedDevice != null) {
-    var idx = deviceListNotifier.connectedDevices
+    var idx = tempConnectedDevices
         .indexWhere((ele) => ele.serialNumber == selectedDevice.serialNumber);
-    if (idx != -1) {
-      ref.read(selectedDeviceProvider.notifier).state =
-          deviceListNotifier.connectedDevices[idx];
-    }
+    ref.read(selectedDeviceProvider.notifier).state =
+        idx != -1 ? tempConnectedDevices[idx] : null;
   }
 
   _updateDbDevices(ref, tempConnectedDevices);
