@@ -136,38 +136,69 @@ class _ApkDragTargetState extends ConsumerState<ApkDragTarget> {
                 : ListView.builder(
                     itemCount: list.length,
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10.0, top: 8.0, right: 8),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.android),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(list[index].name),
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.delete,
-                                      color: Colors.red,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        list.removeAt(index);
-                                      });
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                      return FileListItem(
+                        file: list[index],
+                        onDelete: () {
+                          setState(() {
+                            list.removeAt(index);
+                          });
+                        },
                       );
                     },
                   ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class FileListItem extends StatelessWidget {
+  const FileListItem({super.key, required this.file, this.onDelete});
+  final XFile file;
+  final Function()? onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 10.0, top: 8.0, right: 8),
+      child: Row(
+        children: [
+          const Icon(Icons.android),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        file.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        file.path,
+                        style: const TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                  ),
+                  onPressed: () {
+                    onDelete?.call();
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),
