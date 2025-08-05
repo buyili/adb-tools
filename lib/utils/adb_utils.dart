@@ -213,4 +213,34 @@ class ADBUtils {
         '-s $serialNumber shell sh /sdcard/Android/data/moe.shizuku.privileged.api/start.sh';
     runCmd(argsText.split(" "));
   }
+
+  static void startShizuku2(String serialNumber, ShizukuPackageInfo info) {
+    var argsText =
+        '-s $serialNumber shell ${info.legacyNativeLibraryDir}/${info.primaryCpuAbi}/libshizuku.so';
+    runCmd(argsText.split(" "));
+  }
+
+  /// 获取Shizuku版本信息
+  /// versionCode=1086 minSdk=24 targetSdk=36
+  /// versionName=13.6.0.r1086.2650830c
+  static Future<ShizukuPackageInfo> getShizukuPackageInfo(String serialNumber) async {
+    var argsText =
+        '-s $serialNumber shell dumpsys package moe.shizuku.privileged.api';
+    var result = await runCmd(argsText.split(" "), printOutput: false);
+
+    var vCode = RegExp(r'versionCode=(\d+)').firstMatch(result.output)?.group(1);
+    var legacyNativeLibraryDir = RegExp(r'legacyNativeLibraryDir=(.+)').firstMatch(result.output)?.group(1);
+    var primaryCpuAbi = RegExp(r'primaryCpuAbi=(.+)').firstMatch(result.output)?.group(1);
+    return ShizukuPackageInfo()
+      ..versionCode = vCode!
+      ..legacyNativeLibraryDir = legacyNativeLibraryDir!
+      ..primaryCpuAbi = primaryCpuAbi!;
+  }
+
+}
+
+class ShizukuPackageInfo {
+  late String versionCode;
+  late String legacyNativeLibraryDir;
+  late String primaryCpuAbi;
 }

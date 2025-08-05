@@ -21,8 +21,15 @@ class _ApkDragTargetState extends ConsumerState<ApkDragTarget> {
   final List<XFile> list = [];
 
   // start shizuku
-  void _toggleStartShizuku() {
-    ADBUtils.startShizuku(ref.read(selectedDeviceProvider)!.serialNumber);
+  Future<void> _toggleStartShizuku() async {
+    var serialNumber = ref.read(selectedDeviceProvider)!.serialNumber;
+    var info = await ADBUtils.getShizukuPackageInfo(serialNumber);
+    if(int.parse(info.versionCode) < 1086){
+      ADBUtils.startShizuku(serialNumber);
+      return ;
+    }
+
+    ADBUtils.startShizuku2(serialNumber, info);
   }
 
   // install apk to device
