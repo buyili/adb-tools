@@ -49,5 +49,9 @@
     {
         "args": "shell getprop ro.product.cpu.abilist",
         "needDevice": true
+    },
+    {
+        "args": "shell dumpsys package moe.shizuku.privileged.api",
+        "needDevice": true
     }
 ]
