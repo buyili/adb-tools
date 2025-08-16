@@ -215,8 +215,12 @@ class ADBUtils {
   }
 
   static void startShizuku2(String serialNumber, ShizukuPackageInfo info) {
+    var libDir = info.primaryCpuAbi;
+    if (libDir == "arm64-v8a") {
+      libDir = "arm64";
+    }
     var argsText =
-        '-s $serialNumber shell ${info.legacyNativeLibraryDir}/${info.primaryCpuAbi}/libshizuku.so';
+        '-s $serialNumber shell ${info.legacyNativeLibraryDir}/$libDir/libshizuku.so';
     runCmd(argsText.split(" "));
   }
 
