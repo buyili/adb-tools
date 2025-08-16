@@ -241,6 +241,13 @@ class ADBUtils {
       ..primaryCpuAbi = primaryCpuAbi!;
   }
 
+  /// 启动黑域
+  static void startBrevent(String serialNumber) {
+    var argsText =
+        '-s $serialNumber shell sh /data/data/me.piebridge.brevent/brevent.sh';
+    runCmd(argsText.split(" "));
+  }
+
 }
 
 class ShizukuPackageInfo {

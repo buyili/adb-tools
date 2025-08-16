@@ -32,6 +32,12 @@ class _ApkDragTargetState extends ConsumerState<ApkDragTarget> {
     ADBUtils.startShizuku2(serialNumber, info);
   }
 
+  // start brevent
+  Future<void> _toggleStartBrevent() async {
+    var serialNumber = ref.read(selectedDeviceProvider)!.serialNumber;
+      ADBUtils.startBrevent(serialNumber);
+  }
+
   // install apk to device
   void _toggleInstall() {
     ADBUtils.install(ref.read(selectedDeviceProvider), list);
@@ -106,6 +112,11 @@ class _ApkDragTargetState extends ConsumerState<ApkDragTarget> {
                   FilledButton(
                     onPressed: isSelectedDevice ? _toggleStartShizuku : null,
                     child: const Text("Start Shizuku"),
+                  ),
+                  const SizedBox(width: 10),
+                  FilledButton(
+                    onPressed: isSelectedDevice ? _toggleStartBrevent : null,
+                    child: const Text("Start 黑域"),
                   ),
                   const SizedBox(width: 10),
                   FilledButton(
