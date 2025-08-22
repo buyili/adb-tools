@@ -94,17 +94,14 @@ class _MainAppState extends ConsumerState<MainApp> {
           debugPrint("收到文件路径: $data");
           // 在这里处理接收到的文件路径，比如将文件保存到filesProvider中
 
+          var xfile = XFile(data);
           var files = ref.read(filesProvider);
           var index = files.indexWhere((file) => file.path == data);
           if (index != -1) {
-            DialogUtils.showInfoDialog(
-              "No new APK files were dropped",
-              "You can only drop APK files that are not already selected",
-            );
+            DialogUtils.showFileExsistDialog(xfile.name);
             return;
           }
 
-          var xfile = XFile(data);
           ref.read(filesProvider.notifier).state = [...files, xfile];
         });
       });

@@ -29,4 +29,8 @@ class DialogUtils {
       );
     });
   }
+
+  static void showFileExsistDialog(String fileName) {
+    showInfoDialog("File Exists", "File [$fileName] already exists.");
+  }
 }
