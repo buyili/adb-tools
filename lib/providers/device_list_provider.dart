@@ -100,7 +100,9 @@ void refreshDeviceList(WidgetRef ref, {bool printOutput = true}) async {
 }
 
 void _updateDbDevices(
-    WidgetRef ref, List<DeviceInfo> tempConnectedDevices) async {
+  WidgetRef ref,
+  List<DeviceInfo> tempConnectedDevices,
+) async {
   if (tempConnectedDevices.isEmpty) return;
   var dbDevices = await Db.getSavedAdbDevice();
   bool needUpdate = false;

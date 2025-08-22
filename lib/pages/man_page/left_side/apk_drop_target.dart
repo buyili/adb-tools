@@ -1,3 +1,4 @@
+import 'package:adb_tools/providers/app_provider.dart';
 import 'package:adb_tools/utils/dialog_utils.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
@@ -18,15 +19,35 @@ class ApkDragTarget extends ConsumerStatefulWidget {
 
 class _ApkDragTargetState extends ConsumerState<ApkDragTarget> {
   bool _dragging = false;
-  final List<XFile> list = [];
+
+  void _onDropDone(DropDoneDetails details) async {
+    var list = ref.read(filesProvider);
+    var files = details.files.where((file) {
+      return !list.any((item) {
+        return item.path == file.path;
+      });
+    }).toList();
+    if (files.isEmpty) {
+      DialogUtils.showInfoDialog(
+        context,
+        "No new APK files were dropped",
+        "You can only drop APK files that are not already selected",
+      );
+      return;
+    }
+    ref.read(filesProvider.notifier).state = [
+      ...ref.read(filesProvider),
+      ...files
+    ];
+  }
 
   // start shizuku
   Future<void> _toggleStartShizuku() async {
     var serialNumber = ref.read(selectedDeviceProvider)!.serialNumber;
     var info = await ADBUtils.getShizukuPackageInfo(serialNumber);
-    if(int.parse(info.versionCode) < 1086){
+    if (int.parse(info.versionCode) < 1086) {
       ADBUtils.startShizuku(serialNumber);
-      return ;
+      return;
     }
 
     ADBUtils.startShizuku2(serialNumber, info);
@@ -35,51 +56,35 @@ class _ApkDragTargetState extends ConsumerState<ApkDragTarget> {
   // start brevent
   Future<void> _toggleStartBrevent() async {
     var serialNumber = ref.read(selectedDeviceProvider)!.serialNumber;
-      ADBUtils.startBrevent(serialNumber);
+    ADBUtils.startBrevent(serialNumber);
   }
 
   // install apk to device
   void _toggleInstall() {
+    var list = ref.read(filesProvider);
     ADBUtils.install(ref.read(selectedDeviceProvider), list);
   }
 
   // push files to device
   void _togglePushFiles() {
+    var list = ref.read(filesProvider);
     ADBUtils.push(ref.read(selectedDeviceProvider), list);
   }
 
   // clear all files
   void _toggleClearAll() {
-    setState(() {
-      list.clear();
-    });
+    ref.read(filesProvider.notifier).state = [];
   }
 
   @override
   Widget build(BuildContext context) {
     var selectedDevice = ref.watch(selectedDeviceProvider);
     var isSelectedDevice = (selectedDevice != null);
+    var list = ref.watch(filesProvider);
     var isSelectedDeviceAndFiles = (selectedDevice != null && list.isNotEmpty);
 
     return DropTarget(
-      onDragDone: (detail) {
-        var files = detail.files.where((file) {
-          return !list.any((item) {
-            return item.path == file.path;
-          });
-        }).toList();
-        if (files.isEmpty) {
-          DialogUtils.showInfoDialog(
-            context,
-            "No new APK files were dropped",
-            "You can only drop APK files that are not already selected",
-          );
-          return;
-        }
-        setState(() {
-          list.addAll(files);
-        });
-      },
+      onDragDone: _onDropDone,
       onDragEntered: (detail) {
         setState(() {
           _dragging = true;

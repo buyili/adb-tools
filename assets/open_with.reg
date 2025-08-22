@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\*\shell\OpenWithADBTools]
+@="使用 ADBTools 打开"
+
+[HKEY_CLASSES_ROOT\*\shell\OpenWithADBTools\command]
+@="\"D:\src\ADBTools\ADBTools.exe\" \"%1\""
