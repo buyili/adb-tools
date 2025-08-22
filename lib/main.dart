@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:adb_tools/providers/app_provider.dart';
+import 'package:adb_tools/utils/dialog_utils.dart';
 import 'package:adb_tools/utils/setup.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +84,8 @@ class _MainAppState extends ConsumerState<MainApp> {
     // 监听端口
     if (server != null) {
       server?.listen((client) {
-        debugPrint("收到连接: ${client.remoteAddress.address}:${client.remotePort}");
+        debugPrint(
+            "收到连接: ${client.remoteAddress.address}:${client.remotePort}");
         client.transform(StreamTransformer.fromHandlers(
           handleData: (Uint8List data, EventSink<String> sink) {
             sink.add(utf8.decode(data));
@@ -94,7 +96,13 @@ class _MainAppState extends ConsumerState<MainApp> {
 
           var files = ref.read(filesProvider);
           var index = files.indexWhere((file) => file.path == data);
-          if (index != -1) return;
+          if (index != -1) {
+            DialogUtils.showInfoDialog(
+              "No new APK files were dropped",
+              "You can only drop APK files that are not already selected",
+            );
+            return;
+          }
 
           var xfile = XFile(data);
           ref.read(filesProvider.notifier).state = [...files, xfile];

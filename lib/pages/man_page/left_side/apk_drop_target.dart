@@ -29,7 +29,6 @@ class _ApkDragTargetState extends ConsumerState<ApkDragTarget> {
     }).toList();
     if (files.isEmpty) {
       DialogUtils.showInfoDialog(
-        context,
         "No new APK files were dropped",
         "You can only drop APK files that are not already selected",
       );

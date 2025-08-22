@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 
 class DialogUtils {
-  static void showInfoDialog(BuildContext context, String title, String message) {
-    showDialog(context: context, builder: (context){
+
+  static BuildContext? _context;
+
+  static void init(BuildContext context) {
+    _context = context;
+  }
+
+  static void showInfoDialog(String title, String message) {
+    if (_context == null || !_context!.mounted) {
+      debugPrint("DialogUtils: _context is null");
+      return;
+    }
+
+    showDialog(context: _context!, builder: (context){
       return AlertDialog(
         title: Text(title),
         content: Text(message),

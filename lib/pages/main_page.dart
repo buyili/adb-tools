@@ -4,6 +4,7 @@ import 'package:adb_tools/db/db.dart';
 import 'package:adb_tools/pages/man_page/left_side.dart';
 import 'package:adb_tools/pages/man_page/right_side.dart';
 import 'package:adb_tools/providers/device_list_provider.dart';
+import 'package:adb_tools/utils/dialog_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -18,6 +19,8 @@ class _MainPageState extends ConsumerState<MainPage> {
   @override
   void initState() {
     _init();
+
+    DialogUtils.init(context);
 
     // execute method after current widget build
     WidgetsBinding.instance.addPostFrameCallback((_) {
