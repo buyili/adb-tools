@@ -153,7 +153,7 @@ class _RightSideWidgetState extends ConsumerState<RightSideWidget> {
               ),
             IconButton(
               icon: const Icon(Icons.refresh),
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.primary,
               onPressed: _refreshCommands, // 点击按钮时调用刷新方法
               tooltip:
                   'Refresh Commands List from assets/command_examples.json',

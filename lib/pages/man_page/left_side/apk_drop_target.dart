@@ -150,7 +150,7 @@ class _ApkDragTargetState extends ConsumerState<ApkDragTarget> {
               borderRadius: const BorderRadius.all(Radius.circular(8.0)),
               color: _dragging
                   ? Colors.black26
-                  : Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             ),
             child: list.isEmpty
                 ? const Center(

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:adb_tools/providers/app_provider.dart';
+import 'package:adb_tools/providers/theme_provider.dart';
 import 'package:adb_tools/utils/dialog_utils.dart';
 import 'package:adb_tools/utils/setup.dart';
 import 'package:cross_file/cross_file.dart';
@@ -114,10 +115,16 @@ class _MainAppState extends ConsumerState<MainApp> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: true,
+      themeMode: themeMode,
       theme: ThemeData(
         colorSchemeSeed: Colors.green,
+      ),
+      darkTheme: ThemeData(
+        colorSchemeSeed: Colors.green,
+        brightness: Brightness.dark,
       ),
       home: const MainPage(),
     );

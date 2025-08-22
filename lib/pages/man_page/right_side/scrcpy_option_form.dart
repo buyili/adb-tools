@@ -1,3 +1,4 @@
+import 'package:adb_tools/components/theme_switcher.dart';
 import 'package:adb_tools/db/db.dart';
 import 'package:adb_tools/models/scrcpy_related/scrcpy_config.dart';
 import 'package:adb_tools/providers/config_provider.dart';
@@ -30,9 +31,16 @@ class _ScrcpyOptionFormState extends ConsumerState<ScrcpyOptionForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Scrcpy options:",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Scrcpy options:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            ThemeSwitcher(),
+          ],
         ),
         const SizedBox(height: 10),
         Row(

@@ -59,7 +59,7 @@ class RemainingCommandsTooltip extends StatelessWidget {
       },
       icon: Icon(
         Icons.more_horiz,
-        color: Theme.of(context).primaryColor,
+        color: Theme.of(context).colorScheme.primary,
       ),
     );
   }

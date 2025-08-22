@@ -30,32 +30,32 @@ class DeviceListTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    var colorScheme = Theme.of(context).colorScheme;
     var normalBoxDecoration = BoxDecoration(
-      border: Border.all(color: Colors.grey, width: 1),
+      border: Border.all(color: colorScheme.outlineVariant, width: 1),
       borderRadius: const BorderRadius.all(Radius.circular(8.0)),
       color: isSelected
-          ? Theme.of(context).primaryColor.withValues(alpha: 0.8)
+          ? colorScheme.primaryContainer.withValues(alpha: 0.8)
           : null,
     );
 
     var disconnectedBoxDecoration = BoxDecoration(
-      border: Border.all(color: Colors.grey, width: 1),
+      border: Border.all(color: colorScheme.outlineVariant, width: 1),
       borderRadius: const BorderRadius.all(Radius.circular(8.0)),
       color: null,
     );
 
     var selectedBoxDecoration = BoxDecoration(
-      border: Border.all(color: Theme.of(context).primaryColor, width: 1),
+      border: Border.all(color: colorScheme.outline, width: 1),
       borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-      color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+      color: colorScheme.primary.withValues(alpha: 0.1),
     );
 
     Icon renderLeadingIcon() {
       if (device.connected) {
         return device.wifi
-            ? Icon(
+            ? const Icon(
                 Icons.wifi,
-                color: Theme.of(context).primaryColor,
               )
             : const Icon(Icons.usb);
       }
@@ -104,7 +104,7 @@ class DeviceListTile extends ConsumerWidget {
                   IconButton.outlined(
                     onPressed: onGetIpAndConnect,
                     icon: const Icon(Icons.wifi),
-                    color: Theme.of(context).primaryColor,
+                    color: colorScheme.primary,
                   ),
 
                   const SizedBox(width: 8),
@@ -124,7 +124,6 @@ class DeviceListTile extends ConsumerWidget {
                     IconButton.outlined(
                       onPressed: onConnect,
                       icon: const Icon(Icons.link),
-                      color: Theme.of(context).primaryColor,
                     ),
                     const SizedBox(width: 8),
                   ],
