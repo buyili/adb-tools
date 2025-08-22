@@ -1,19 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:adb_tools/providers/app_provider.dart';
 import 'package:adb_tools/utils/dialog_utils.dart';
 import 'package:adb_tools/utils/setup.dart';
 import 'package:cross_file/cross_file.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'pages/main_page.dart';
 
-const int port = 6666;
+const int port = kDebugMode ? 6665 : 6666;
 
 ServerSocket? server;
 
@@ -26,6 +26,7 @@ Future<void> main(List<String> args) async {
     isServer = true;
 
     debugPrint("Socket 服务已启动，等待文件路径...");
+    // 监听函数在ProvideScope组件下_MainAppState中调用
   } catch (e) {
     isServer = false;
   }
@@ -114,7 +115,7 @@ class _MainAppState extends ConsumerState<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       theme: ThemeData(
         colorSchemeSeed: Colors.green,
       ),
