@@ -117,7 +117,7 @@ class DeviceListTile extends ConsumerWidget {
               if (device.wifi) ...[
                 if (!device.connected) ...[
                   // button to connect
-                  IconButton.outlined(
+                  IconButton.filled(
                     onPressed: onConnect,
                     icon: const Icon(Icons.link),
                   ),
