@@ -9,6 +9,22 @@ import '../utils/const.dart';
 import '../utils/prefs_key.dart';
 
 class Db {
+  /*
+  Theme DB
+  */
+
+  static Future<void> saveTheme(ThemeMode themeMode) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(PKEY_APPTHEME, themeMode.name);
+  }
+
+  static Future<ThemeMode> getSavedTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    final theme = prefs.getString(PKEY_APPTHEME) ?? "system";
+
+    return ThemeMode.values.firstWhere((item) => item.name == theme,
+        orElse: () => ThemeMode.system);
+  }
 
   /*
   Device DB
@@ -52,7 +68,7 @@ class Db {
     prefs.setString(PKEY_MAIN_CONFIG, config.toJson());
   }
 
-  static  Future<ScrcpyConfig> getMainConfig() async {
+  static Future<ScrcpyConfig> getMainConfig() async {
     final prefs = await SharedPreferences.getInstance();
     final jsons = prefs.getString(PKEY_MAIN_CONFIG);
 
@@ -85,7 +101,8 @@ class Db {
     }
   }
 
-  static Future<void> saveConfigs(BuildContext context, List<ScrcpyConfig> conf) async {
+  static Future<void> saveConfigs(
+      BuildContext context, List<ScrcpyConfig> conf) async {
     final prefs = await SharedPreferences.getInstance();
     List<String> savedJson = [];
 
@@ -95,5 +112,4 @@ class Db {
 
     prefs.setStringList(PKEY_SAVED_CONFIG, savedJson);
   }
-
 }

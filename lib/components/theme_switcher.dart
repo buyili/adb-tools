@@ -5,21 +5,45 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class ThemeSwitcher extends ConsumerWidget {
   const ThemeSwitcher({super.key});
 
+  static const List<IconData> icons = [
+    Icons.settings_brightness,
+    Icons.light_mode,
+    Icons.dark_mode,
+  ];
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeProvider);
     final themeNotifier = ref.read(themeProvider.notifier);
 
-    // 根据当前主题模式选择图标
-    final IconData icon =
-        themeMode == ThemeMode.dark ? Icons.wb_sunny : Icons.nightlight;
-
-    return IconButton(
-      icon: Icon(icon),
-      onPressed: () {
-        themeNotifier.toggleTheme();
+    return MenuAnchor(
+      builder:
+          (BuildContext context, MenuController controller, Widget? child) {
+        return IconButton(
+          onPressed: () {
+            if (controller.isOpen) {
+              controller.close();
+            } else {
+              controller.open();
+            }
+          },
+          icon: Icon(icons[themeMode.index]),
+          tooltip: "Switch theme",
+        );
       },
-      tooltip: '切换主题',
+      menuChildren: ThemeMode.values
+          .map((item) => MenuItemButton(
+                onPressed: () => themeNotifier.toggleTheme(item),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(icons[item.index]),
+                    const SizedBox(width: 8),
+                    Text(item.name),
+                  ],
+                ),
+              ))
+          .toList(),
     );
   }
 }

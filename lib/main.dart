@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:adb_tools/db/db.dart';
 import 'package:adb_tools/providers/app_provider.dart';
 import 'package:adb_tools/providers/theme_provider.dart';
 import 'package:adb_tools/utils/dialog_utils.dart';
@@ -68,7 +69,16 @@ Future<void> main(List<String> args) async {
     await windowManager.focus();
   });
 
-  runApp(const ProviderScope(child: MainApp()));
+  var themeMode = await Db.getSavedTheme();
+
+  runApp(ProviderScope(
+    overrides: [
+      themeProvider.overrideWith(
+        (ref) => ThemeProvider.from(themeMode),
+      )
+    ],
+    child: const MainApp(),
+  ));
 }
 
 class MainApp extends ConsumerStatefulWidget {
