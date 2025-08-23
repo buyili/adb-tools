@@ -31,24 +31,22 @@ class DeviceListTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var colorScheme = Theme.of(context).colorScheme;
+    var border = Border(bottom: BorderSide(color: colorScheme.outlineVariant, width: 1));
     var normalBoxDecoration = BoxDecoration(
-      border: Border.all(color: colorScheme.outlineVariant, width: 1),
-      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+      border: border,
       color: isSelected
           ? colorScheme.primaryContainer.withValues(alpha: 0.8)
           : null,
     );
 
     var disconnectedBoxDecoration = BoxDecoration(
-      border: Border.all(color: colorScheme.outlineVariant, width: 1),
-      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+      border: border,
       color: null,
     );
 
     var selectedBoxDecoration = BoxDecoration(
-      border: Border.all(color: colorScheme.outline, width: 1),
-      borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-      color: colorScheme.primary.withValues(alpha: 0.1),
+      border: Border(bottom: BorderSide(color: colorScheme.outline, width: 1)),
+      color: colorScheme.primary.withValues(alpha: 0.2),
     );
 
     Icon renderLeadingIcon() {
@@ -67,87 +65,84 @@ class DeviceListTile extends ConsumerWidget {
       ScrcpyUtils.start(device.serialNumber, config);
     }
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: MouseRegion(
-        cursor: device.connected ? SystemMouseCursors.click : MouseCursor.defer,
-        child: GestureDetector(
-          onTap: () {
-            if (device.connected) {
-              onTap!();
-            }
-          },
-          child: Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: device.connected
-                ? (isSelected ? selectedBoxDecoration : normalBoxDecoration)
-                : disconnectedBoxDecoration,
-            child: Row(
-              children: [
-                // icon
-                renderLeadingIcon(),
-                const SizedBox(
-                  width: 8,
+    return MouseRegion(
+      cursor: device.connected ? SystemMouseCursors.click : MouseCursor.defer,
+      child: GestureDetector(
+        onTap: () {
+          if (device.connected) {
+            onTap!();
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(8.0),
+          decoration: device.connected
+              ? (isSelected ? selectedBoxDecoration : normalBoxDecoration)
+              : disconnectedBoxDecoration,
+          child: Row(
+            children: [
+              // icon
+              renderLeadingIcon(),
+              const SizedBox(
+                width: 8,
+              ),
+    
+              // serial number
+              Expanded(child: TileTitle(device: device)),
+    
+              if (!device.wifi) ...[
+                OutlinedButton(
+                    onPressed: onOpenTcpipPort,
+                    child: const Text('Open TCP/IP')),
+    
+                const SizedBox(width: 8),
+    
+                // button to connect
+                IconButton.outlined(
+                  onPressed: onGetIpAndConnect,
+                  icon: const Icon(Icons.wifi),
+                  color: colorScheme.primary,
                 ),
-
-                // serial number
-                Expanded(child: TileTitle(device: device)),
-
-                if (!device.wifi) ...[
-                  OutlinedButton(
-                      onPressed: onOpenTcpipPort,
-                      child: const Text('Open TCP/IP')),
-
-                  const SizedBox(width: 8),
-
+    
+                const SizedBox(width: 8),
+              ],
+    
+              if (device.connected) ...[
+                // button to disconnect
+                IconButton.outlined(
+                    onPressed: onStartScrcpy,
+                    icon: const Icon(Icons.display_settings)),
+                const SizedBox(width: 8),
+              ],
+    
+              if (device.wifi) ...[
+                if (!device.connected) ...[
                   // button to connect
                   IconButton.outlined(
-                    onPressed: onGetIpAndConnect,
-                    icon: const Icon(Icons.wifi),
-                    color: colorScheme.primary,
+                    onPressed: onConnect,
+                    icon: const Icon(Icons.link),
                   ),
-
                   const SizedBox(width: 8),
                 ],
-
-                if (device.connected) ...[
+                if (device.connected ||
+                    DeviceState.offline.name == device.state) ...[
                   // button to disconnect
-                  IconButton.outlined(
-                      onPressed: onStartScrcpy,
-                      icon: const Icon(Icons.display_settings)),
+                  IconButton.filled(
+                      onPressed: onDisconnect,
+                      icon: const Icon(Icons.link_off)),
                   const SizedBox(width: 8),
-                ],
-
-                if (device.wifi) ...[
-                  if (!device.connected) ...[
-                    // button to connect
-                    IconButton.outlined(
-                      onPressed: onConnect,
-                      icon: const Icon(Icons.link),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                  if (device.connected ||
-                      DeviceState.offline.name == device.state) ...[
-                    // button to disconnect
-                    IconButton.filled(
-                        onPressed: onDisconnect,
-                        icon: const Icon(Icons.link_off)),
-                    const SizedBox(width: 8),
-                  ]
-                ],
-
-                if (device.isHistory) ...[
-                  // button to delete history
-                  IconButton.outlined(
-                      onPressed: onDelete,
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.red,
-                      )),
                 ]
               ],
-            ),
+    
+              if (device.isHistory) ...[
+                // button to delete history
+                IconButton.outlined(
+                    onPressed: onDelete,
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    )),
+              ]
+            ],
           ),
         ),
       ),
