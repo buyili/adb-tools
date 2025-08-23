@@ -137,7 +137,10 @@ class ADBUtils {
   }
 
   static Future<void> push(
-      DeviceInfo? selectedDevice, List<XFile> apkFileList) async {
+    DeviceInfo? selectedDevice,
+    List<XFile> apkFileList,
+    {String targetDir = "/sdcard/ADBTools/"}
+  ) async {
     if (selectedDevice == null) {
       return;
     }
@@ -149,7 +152,7 @@ class ADBUtils {
         'push',
         '--sync',
         apkFile.path,
-        '/sdcard/${apkFile.name}'
+        '$targetDir${apkFile.name}'
       ];
 
       await runCmd(args, argsSerialize: (args) {
@@ -227,14 +230,19 @@ class ADBUtils {
   /// 获取Shizuku版本信息
   /// versionCode=1086 minSdk=24 targetSdk=36
   /// versionName=13.6.0.r1086.2650830c
-  static Future<ShizukuPackageInfo> getShizukuPackageInfo(String serialNumber) async {
+  static Future<ShizukuPackageInfo> getShizukuPackageInfo(
+      String serialNumber) async {
     var argsText =
         '-s $serialNumber shell dumpsys package moe.shizuku.privileged.api';
     var result = await runCmd(argsText.split(" "), printOutput: false);
 
-    var vCode = RegExp(r'versionCode=(\d+)').firstMatch(result.output)?.group(1);
-    var legacyNativeLibraryDir = RegExp(r'legacyNativeLibraryDir=(.+)').firstMatch(result.output)?.group(1);
-    var primaryCpuAbi = RegExp(r'primaryCpuAbi=(.+)').firstMatch(result.output)?.group(1);
+    var vCode =
+        RegExp(r'versionCode=(\d+)').firstMatch(result.output)?.group(1);
+    var legacyNativeLibraryDir = RegExp(r'legacyNativeLibraryDir=(.+)')
+        .firstMatch(result.output)
+        ?.group(1);
+    var primaryCpuAbi =
+        RegExp(r'primaryCpuAbi=(.+)').firstMatch(result.output)?.group(1);
     return ShizukuPackageInfo()
       ..versionCode = vCode!
       ..legacyNativeLibraryDir = legacyNativeLibraryDir!
@@ -247,7 +255,6 @@ class ADBUtils {
         '-s $serialNumber shell sh /data/data/me.piebridge.brevent/brevent.sh';
     runCmd(argsText.split(" "));
   }
-
 }
 
 class ShizukuPackageInfo {
