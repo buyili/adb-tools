@@ -11,6 +11,7 @@ import 'package:cross_file/cross_file.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:toastification/toastification.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'pages/main_page.dart';
@@ -126,17 +127,19 @@ class _MainAppState extends ConsumerState<MainApp> {
   @override
   Widget build(BuildContext context) {
     final themeMode = ref.watch(themeProvider);
-    return MaterialApp(
-      debugShowCheckedModeBanner: true,
-      themeMode: themeMode,
-      theme: ThemeData(
-        colorSchemeSeed: Colors.green,
+    return ToastificationWrapper(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: true,
+        themeMode: themeMode,
+        theme: ThemeData(
+          colorSchemeSeed: Colors.green,
+        ),
+        darkTheme: ThemeData(
+          colorSchemeSeed: Colors.green,
+          brightness: Brightness.dark,
+        ),
+        home: const MainPage(),
       ),
-      darkTheme: ThemeData(
-        colorSchemeSeed: Colors.green,
-        brightness: Brightness.dark,
-      ),
-      home: const MainPage(),
     );
   }
 }
