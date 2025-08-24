@@ -28,10 +28,16 @@ class DeviceListTile extends ConsumerWidget {
     this.onGetIpAndConnect,
   });
 
+  void _onStartScrcpy(WidgetRef ref) {
+    final ScrcpyConfig config = ref.read(configScreenConfig)!;
+    ScrcpyUtils.start(device.serialNumber, config);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var colorScheme = Theme.of(context).colorScheme;
-    var border = Border(bottom: BorderSide(color: colorScheme.outlineVariant, width: 1));
+    var border =
+        Border(bottom: BorderSide(color: colorScheme.outlineVariant, width: 1));
     var normalBoxDecoration = BoxDecoration(
       border: border,
       color: isSelected
@@ -60,11 +66,6 @@ class DeviceListTile extends ConsumerWidget {
       return const Icon(Icons.wifi_off);
     }
 
-    void onStartScrcpy() {
-      final ScrcpyConfig config = ref.read(configScreenConfig)!;
-      ScrcpyUtils.start(device.serialNumber, config);
-    }
-
     return MouseRegion(
       cursor: device.connected ? SystemMouseCursors.click : MouseCursor.defer,
       child: GestureDetector(
@@ -85,35 +86,40 @@ class DeviceListTile extends ConsumerWidget {
               const SizedBox(
                 width: 8,
               ),
-    
+
               // serial number
               Expanded(child: TileTitle(device: device)),
-    
+
               if (!device.wifi) ...[
                 OutlinedButton(
-                    onPressed: onOpenTcpipPort,
-                    child: const Text('Open TCP/IP')),
-    
+                  onPressed: onOpenTcpipPort,
+                  child: const Text('Open TCP/IP'),
+                ),
+
                 const SizedBox(width: 8),
-    
+
                 // button to connect
                 IconButton.outlined(
                   onPressed: onGetIpAndConnect,
                   icon: const Icon(Icons.wifi),
                   color: colorScheme.primary,
                 ),
-    
+
                 const SizedBox(width: 8),
               ],
-    
+
               if (device.connected) ...[
                 // button to disconnect
                 IconButton.outlined(
-                    onPressed: onStartScrcpy,
-                    icon: const Icon(Icons.display_settings)),
+                  onPressed: () {
+                    _onStartScrcpy(ref);
+                  },
+                  icon: const Icon(Icons.display_settings),
+                ),
+
                 const SizedBox(width: 8),
               ],
-    
+
               if (device.wifi) ...[
                 if (!device.connected) ...[
                   // button to connect
@@ -121,26 +127,30 @@ class DeviceListTile extends ConsumerWidget {
                     onPressed: onConnect,
                     icon: const Icon(Icons.link),
                   ),
+
                   const SizedBox(width: 8),
                 ],
                 if (device.connected ||
                     DeviceState.offline.name == device.state) ...[
                   // button to disconnect
                   IconButton.filled(
-                      onPressed: onDisconnect,
-                      icon: const Icon(Icons.link_off)),
+                    onPressed: onDisconnect,
+                    icon: const Icon(Icons.link_off),
+                  ),
+
                   const SizedBox(width: 8),
                 ]
               ],
-    
+
               if (device.isHistory) ...[
                 // button to delete history
                 IconButton.outlined(
-                    onPressed: onDelete,
-                    icon: const Icon(
-                      Icons.delete,
-                      color: Colors.red,
-                    )),
+                  onPressed: onDelete,
+                  icon: const Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                  ),
+                ),
               ]
             ],
           ),
@@ -157,13 +167,16 @@ class TileTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var deviceName = (device.product != null && device.product!.isNotEmpty)
+        ? '${device.product}-${device.model}'
+        : '';
     return Row(
       children: [
-        CopyableText(device.serialNumber),
-        const SizedBox(width: 32),
-        CopyableText((device.product != null && device.product!.isNotEmpty)
-            ? '${device.product}-${device.model}'
-            : '')
+        SizedBox(
+          width: 160,
+          child: CopyableText(device.serialNumber),
+        ),
+        CopyableText(deviceName)
       ],
     );
   }
