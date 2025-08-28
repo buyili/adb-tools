@@ -77,15 +77,20 @@ class _DeviceListState extends ConsumerState<DeviceList> {
         itemCount: devices.length,
         itemBuilder: (context, index) {
           var deviceItem = devices[index];
+
+          // 如果是标题，返回DevideTitle
           if (deviceItem.isTitle) {
             return DivideTitle(
               title: deviceItem.name!,
             );
           }
+
+          // 是否被选中
+          var isSelected = selectedDevice != null &&
+                selectedDevice.serialNumber == deviceItem.serialNumber;
           return DeviceListTile(
             device: deviceItem,
-            isSelected: selectedDevice != null &&
-                selectedDevice.serialNumber == deviceItem.serialNumber,
+            isSelected: isSelected,
             onTap: () {
               _onSelect(deviceItem);
             },
