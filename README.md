@@ -19,7 +19,8 @@
 ## 软件截图
 
 ### 主界面
-![img.png](.README_images/img_1.png)
+![img.png](.README_images/mainPage_light.png)
+![img.png](.README_images/mainPage_dark.png)
 
 ### 命令执行输出界面
 
