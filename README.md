@@ -20,6 +20,7 @@
 
 ### 主界面
 ![img.png](.README_images/mainPage_light.png)
+
 ![img.png](.README_images/mainPage_dark.png)
 
 ### 命令执行输出界面
